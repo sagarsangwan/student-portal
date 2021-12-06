@@ -2,18 +2,15 @@
   .home-search {
     background-color: #e3f2fd;
     min-height: 70vh;
-    padding-top: 18%;
+    padding: 80px;
   }
 </style>
-
 <form class="container home-search">
-
-  <div class="input-group row justify-content-center">
-
-    <input type="text" class="form-control col-6" aria-label="Text input with dropdown button">
-    <div class="input-group-append">
-
-
+  <div class="input-group row justify-content-center text-center">
+    <div class="col">
+      <input type="text" class="form-control" aria-label="Text input with dropdown button">
+    </div>
+    <div class="input-group-append col">
       <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown"
         aria-haspopup="true" aria-expanded="false">filter</button>
       <div class="dropdown-menu">
@@ -23,11 +20,9 @@
         <div role="separator" class="dropdown-divider"></div>
         <a class="dropdown-item" href="#">Separated link</a>
       </div>
-
-
+    </div>
+    <div class="col">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-
     </div>
   </div>
-
 </form>
