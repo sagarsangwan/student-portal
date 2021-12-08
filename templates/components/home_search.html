@@ -1,28 +1,78 @@
 <style>
-  .home-search {
+  .home-search-container {
     background-color: #e3f2fd;
+  }
+
+  .home-search {
     min-height: 70vh;
-    padding: 80px;
+    margin-bottom: 24px;
+  }
+
+  .home-search button,
+  .home-search input {
+    width: 100%;
+  }
+
+  .home-search .input-container {
+    display: inline-flex;
+    width: 500px;
+  }
+
+  .home-search .filter-container {
+    display: inline-flex;
+    width: 120px;
+  }
+
+  .home-search .button-container {
+    display: inline-flex;
+    width: 120px;
+  }
+
+  @media(max-width: 768px) {
+    .home-search .input-container {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    .home-search .filter-container {
+      width: 100%;
+      margin-bottom: 16px
+    }
+
+    .home-search .button-container {
+
+      width: 100%;
+      margin-bottom: 16px
+    }
   }
 </style>
-<form class="container home-search">
-  <div class="input-group row justify-content-center text-center">
-    <div class="col">
-      <input type="text" class="form-control" aria-label="Text input with dropdown button">
-    </div>
-    <div class="input-group-append col">
-      <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="false">filter</button>
-      <div class="dropdown-menu">
-        <a class="dropdown-item" href="#">Action</a>
-        <a class="dropdown-item" href="#">Another action</a>
-        <a class="dropdown-item" href="#">Something else here</a>
-        <div role="separator" class="dropdown-divider"></div>
-        <a class="dropdown-item" href="#">Separated link</a>
+
+
+
+
+
+<form class="home-search-container">
+  <div class="container">
+    <div class="row  home-search justify-content-center align-items-center">
+      <div class="col text-center">
+        <div class="input-container">
+          <input type="text" class="form-control" aria-label="Text input with dropdown button">
+        </div>
+        <div class="filter-container">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">Filter</button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+            <div role="separator" class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Separated link</a>
+          </div>
+        </div>
+        <div class="button-container">
+          <button class="btn btn-success" type="submit">Search</button>
+        </div>
       </div>
-    </div>
-    <div class="col">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </div>
   </div>
 </form>
