@@ -11,23 +11,28 @@
             Feel free to email me at <a href="mailto:iamsagarsangwan@gmail.com">iamsagarsangwan</a> <br>
             Contact number - <a href="tel:7015470897">7015470897</a> <br>
             Or use the form below
+
         </p>
+    </div>
+    <form class="row" method="POST">
         <div class="col-xs-12 col-md-4 small-padding-bottom">
-            <input type="text" required name="name" class="form-control" placeholder="First name"
+            <input type="text" required name= "name" class="form-control" placeholder="First name"
                 aria-label="First name">
         </div>
         <div class="col-xs-12 col-md-4 small-padding-bottom">
-            <input type="email" name="email" required class="form-control" placeholder="Email" aria-label="Last name">
+            <input type="email" name= "email" required class="form-control" placeholder="Email" aria-label="Last name">
         </div>
         <div class="col-xs-12 col-md-8 form-floating small-padding-bottom">
-            <textarea class="form-control" name="messages" placeholder="Leave a comment here"
-                rows="6" id="floatingTextarea"></textarea>
+            <textarea class="form-control" name= "message" placeholder="Leave a comment here" rows="6"
+                id="floatingTextarea"></textarea>
 
         </div>
         <div class="col-12 small-padding-bottom">
             <button class="btn btn-primary" type="submit">Submit form</button>
         </div>
-    </div>
+        <i>{{info}}</i>
+
+    </form>
 
 </div>
 
