@@ -26,7 +26,13 @@ def home():
 
 @app.route("/course/<id>", methods = ['GET', 'POST'])
 def courses(id):
-    print(id)
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT subjects_ids FROM course_to_subjets WHERE course_id ="+id)
+    subjects = cur.fetchall()
+    subjects = subjects[0][0]
+    subjects.split(",")
+    print(subjects)
+    
     return render_template("pages/courses.html")
 
 
