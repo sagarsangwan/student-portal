@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
+{% with course_name_header=header[0], course_subject_header=header[1] %}
+    {% include "uni_search.html" %}
+{% endwith %}
+
+
 
 
 {% endblock %}
