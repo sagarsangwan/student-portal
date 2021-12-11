@@ -31,7 +31,11 @@ def courses(id):
     subjects = cur.fetchall()
     subjects = subjects[0][0]
     subjects.split(",")
+    cur.execute("SELECT course_name, course_desc FROM courses WHERE id ="+id)
+    header_courses = cur.fetchall()
+    print(header_courses)
     print(subjects)
+
     
     return render_template("pages/courses.html")
 
