@@ -30,16 +30,22 @@ def courses(id):
     cur.execute("SELECT subjects_ids FROM course_to_subjets WHERE course_id ="+id)
     subjects = cur.fetchall()
     subjects = subjects[0][0]
-    subjects = subjects.split(",")
+    #subjects = subjects.split(",")
     cur.execute("SELECT course_name, course_desc FROM courses WHERE id ="+id)
     header_courses = cur.fetchall()
     header_courses = header_courses[0]
     header_courses = list(header_courses)
+    cur.execute("SELECT id, subject_name, subject_desc FROM subjects WHERE id IN " + subjects)
+    s = cur.fetchall()
+    
+    #s = s[0] 
     
     print(subjects)
+    print(s)
+
 
     
-    return render_template("pages/courses.html", header = header_courses, subject = subjects)
+    return render_template("pages/courses.html", header = header_courses, s1 = s,  subject = subjects)
 
 
 
