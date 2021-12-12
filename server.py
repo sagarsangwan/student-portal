@@ -37,16 +37,15 @@ def courses(id):
     header_courses = list(header_courses)
     cur.execute("SELECT id, subject_name, subject_desc FROM subjects WHERE id IN " + subjects)
     s = cur.fetchall()
-    
-    #s = s[0] 
-    
-    print(subjects)
-    print(s)
-
-
-    
     return render_template("pages/courses.html", header = header_courses, s1 = s,  subject = subjects)
 
+@app.route("/subject/<id>", methods = ['GET', 'POST'])
+def subject(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT subject_name, subject_desc FROM subjects WHERE id IN ("+ id +")")
+    subject_head = cur.fetchall()
+    print(subject_head )
+    return render_template("pages/subject.html", subject_head1 = subject_head)
 
 
 @app.route("/feedback", methods = ['GET', 'POST'])
