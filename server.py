@@ -44,6 +44,7 @@ def subject(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT subject_name, subject_desc FROM subjects WHERE id IN ("+ id +")")
     subject_head = cur.fetchall()
+    subject_head = subject_head[0]
     print(subject_head )
     return render_template("pages/subject.html", subject_head1 = subject_head)
 
