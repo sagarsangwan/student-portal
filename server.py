@@ -15,13 +15,15 @@ mysql = MySQL(app)
 
 @app.route("/", methods = ['GET', 'POST'])
 def home():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT JSON_ARRAYAGG(JSON_OBJECT('id', ID, 'course_name', course_name, 'course_desc', course_desc)) FROM courses")
-    table = cur.fetchall()
-    mysql.connection.commit()
-    cur.close()
-    return render_template("pages/home.html", value = json.loads(table[0][0]))
-
+    if request.method == 'GET':
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT JSON_ARRAYAGG(JSON_OBJECT('id', ID, 'course_name', course_name, 'course_desc', course_desc)) FROM courses")
+        table = cur.fetchall()
+        mysql.connection.commit()
+        cur.close()
+        return render_template("pages/home.html", value = json.loads(table[0][0]))
+    else:
+        return render_template("pages/search.html")
 
 
 @app.route("/course/<id>", methods = ['GET', 'POST'])
@@ -47,7 +49,9 @@ def subject(id):
     subject_head = subject_head[0]
     print(subject_head )
     return render_template("pages/subject.html", subject_head1 = subject_head)
-
+@app.route("/search_result")
+def search():
+    return render_template("pages/search.html")
 
 @app.route("/feedback", methods = ['GET', 'POST'])
 def feedback():

@@ -2,7 +2,89 @@
 
 
 {% block content %}
-{% include "components/home_search.html" %}
+<style>
+    .home-search-container {
+        background-color: #f9fff3;
+    }
+
+    .home-search {
+        min-height: 70vh;
+        margin-bottom: 24px;
+        background-image: url(static/images/cover_pic.jpg);
+        background-size: 540px;
+        background-repeat: no-repeat;
+        background-position: right;
+    }
+
+    .home-search button,
+    .home-search input {
+        width: 100%;
+    }
+
+    .home-search .input-container {
+        display: inline-flex;
+        width: 500px;
+    }
+
+    .home-search .filter-container {
+        display: inline-flex;
+        width: 120px;
+    }
+
+    .home-search .button-container {
+        display: inline-flex;
+        width: 120px;
+    }
+
+    @media(max-width: 768px) {
+        .home-search .input-container {
+            width: 100%;
+            margin-bottom: 16px;
+        }
+
+        .home-search .filter-container {
+            width: 100%;
+            margin-bottom: 16px
+        }
+
+        .home-search .button-container {
+
+            width: 100%;
+            margin-bottom: 16px
+        }
+
+        .home-search {
+            background-position: -61px 60px;
+        }
+
+    }
+</style>
+
+
+
+
+
+<form class="home-search-container" method="POST">
+    <div class="container">
+        <div class="row  home-search justify-content-center align-items-center">
+            <div class="col">
+                <div>
+                    <h1><b> Student Portal </b></h1>
+                    <p>
+                        Making it easy for students to find resources
+                    </p>
+                    <br><br>
+                </div>
+                <div class="input-container">
+                    <input type="text" class="form-control" name="search" type="text" aria-label="Text input with dropdown button">
+                </div>
+                <div class="button-container">
+                    <button class="btn btn-success" type="submit">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
 <div class="container height">
     <div class="row justify-content-center">
         {% for row in value %}
