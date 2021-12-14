@@ -46,8 +46,13 @@ def courses(id):
         global search1
         search1 = request.form["search"]
         cur = mysql.connection.cursor()
-        cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" + search1 + "%'OR subject_desc LIKE '%" + search1 + "%'OR subject_alt_name LIKE '%" + search1 + "%'")
+        cur.execute("SELECT subjects_ids FROM course_to_subjets WHERE course_id ="+id)
+        subject = cur.fetchall()
+        subject = subject[0][0]
+        print(subject)
+        cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE (subject_name LIKE '%" + search1 + "%'OR subject_desc LIKE '%" + search1 + "%'OR subject_alt_name LIKE '%" + search1 + "%') AND id IN " + subject)
         sub = cur.fetchall()
+        
         if len(sub) > 0:
             print(sub)
             return render_template("pages/search.html", value = sub)
