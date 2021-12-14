@@ -70,7 +70,7 @@ def subject(id):
         cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE id IN ("+ id +")")
         subject_head = cur.fetchall()
         subject_head = subject_head[0]
-        return render_template("pages/subject.html", subject_head1 = subject_head)
+        return render_template("pages/subject.html", subject_head1 = subject_head, id1 = id)
     
 
 
@@ -93,7 +93,16 @@ def feedback():
         return render_template("pages/feedback.html", info = "message sent sucessfully")
     return render_template("pages/feedback.html")
 
-
+@app.route("/subject_detail/<id>")
+def subject_detail(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT question_papers FROM subjects WHERE id =" + id)
+    detail = cur.fetchall()
+    detail = list(detail)
+    detail = detail[0][0]
+    detail = detail.split(",")
+    print(detail)
+    return render_template("pages/subject_detail.html", value = detail)
 if __name__ == "__main__":
     app.run(debug=True)
 
