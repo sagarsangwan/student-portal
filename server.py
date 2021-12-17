@@ -45,13 +45,14 @@ def home():
             print(match)
             search = request.form['search']
             matches = get_close_matches(search, match)  
-            a = matches[0]
+            
             if len(matches)>0:
+                a = matches[0]
                 cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" + a + "%'OR subject_desc LIKE '%" + a + "%'OR subject_alt_name LIKE '%" + a + "%'")
                 sub = cur.fetchall()
                 print(sub)
                 return render_template("pages/search.html", value = sub)          
-            return render_template("pages/nothing.html")
+            
     
 
 
@@ -85,7 +86,23 @@ def courses(id):
             print(sub)
             return render_template("pages/search.html", value = sub)
         else:
-           return render_template("pages/nothing.html")
+            cur = mysql.connection.cursor()
+            cur.execute("SELECT subject_name, subject_desc FROM subjects ")
+            subject = cur.fetchall()
+            subject = list(subject)
+            match = []
+            for i in subject:    
+                match.extend(list(i))
+            print(match)
+            search = request.form['search']
+            matches = get_close_matches(search, match)  
+            
+            if len(matches)>0:
+                a = matches[0]
+                cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" + a + "%'OR subject_desc LIKE '%" + a + "%'OR subject_alt_name LIKE '%" + a + "%'")
+                sub = cur.fetchall()
+                print(sub)
+                return render_template("pages/search.html", value = sub)          
            
         
         
