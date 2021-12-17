@@ -23,8 +23,18 @@ def home():
         mysql.connection.commit()
         cur.close()
         return render_template("pages/home.html", value = json.loads(table[0][0]))
-    else:
-        return render_template("pages/search.html")
+    elif request.method == 'POST':
+        search = request.form['search']
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" + search + "%'OR subject_desc LIKE '%" + search + "%'OR subject_alt_name LIKE '%" + search + "%'")
+        result = cur.fetchall()
+        
+        if len(result) > 0:
+            print(result)
+            return render_template("pages/search.html", value = result)
+        else:
+            return render_template("pages/nothing.html")
+        
 
 
 @app.route("/course/<id>", methods = ['GET', 'POST'])
