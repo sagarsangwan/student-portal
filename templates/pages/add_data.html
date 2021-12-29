@@ -2,31 +2,39 @@
 {% block content %}
 <div class="container">
     <form class="row">
-        <div class="col-xs-12 col-md-3 home-search-pading">
-            <ul class="list-group ">
-                <li class="list-group-item">
-                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="...">
-                  First checkbox
-                </li>
-                <li class="list-group-item">
-                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="...">
-                  Second checkbox
-                </li>
-                <li class="list-group-item">
-                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="...">
-                  Third checkbox
-                </li>
-                <li class="list-group-item">
-                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="">
-                  Fourth checkbox
-                </li>
-                <li class="list-group-item">
-                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="...">
-                  Fifth checkbox
-                </li>
-              </ul>
+        <h4 class="col-12">
+            Select Course
+        </h4>
+        <div class="col-xs-12 col-md-3">
+            <div class="list-group">
+                <label class="list-group-item">
+                    <input class="form-check-input me-1" type="checkbox" value="">
+                    Cse
+                </label>
+                <label class="list-group-item">
+                    <input class="form-check-input me-1" type="checkbox" value="">
+                    Mechanical
+                </label>
+                <label class="list-group-item">
+                    <input class="form-check-input me-1" type="checkbox" value="">
+                    Electrical
+                </label>
+            </div>
+        </div>
+        <h4 class="col-12">Select subject name</h4>
+        <div class="col-12">
+            <select class="form-select">
+                <option selected disabled value="">Choose...</option>
+                {% for subject_name in value %}
+                <option>{{subject_name[0]}}</option>
+                {% endfor %}
+            </select>
         </div>
     </form>
 </div>
 
 {% endblock %}
+<option selected disabled value="">Choose...</option>
+{% for subject_name in value %}
+<option>{{subject_name[0]}}</option>
+{% endfor %}

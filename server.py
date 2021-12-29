@@ -136,7 +136,11 @@ def Dashboard():
 
 @app.route("/add_data")
 def add_data():
-    return render_template("pages/add_data.html")
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT subject_name FROM subjects")
+    result = cur.fetchall()
+    print(result)
+    return render_template("pages/add_data.html", value = result)
 
 @app.route("/feedback", methods = ['GET', 'POST'])
 def feedback():
