@@ -3,7 +3,7 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <form>
+            <form method="post" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-12">
                         <h4>Select Course</h4>
@@ -12,7 +12,7 @@
                         <div class="list-group">
                             {% for course_name in courses %}
                             <label class="list-group-item">
-                                <input class="form-check-input me-1" type="checkbox" value="{{course_name[0]}} ">
+                                <input class="form-check-input me-1" name="course_name" type="checkbox" value="{{course_name[0]}} ">
                                 {{course_name[1]}}
                             </label>
                             {% endfor %}
@@ -22,7 +22,7 @@
                         <h4>Select subject name</h4>
                     </div>
                     <div class="col-12">
-                        <select class="form-select">
+                        <select class="form-select" name="subject_name1">
                             <option selected disabled value="">Choose...</option>
                             {% for subject_name in subject %}
                             <option value="{{subject_name[0]}}">{{subject_name[1]}}</option>
@@ -31,11 +31,14 @@
                     </div>
                     <div class="col-12">
                         <!-- <label for="formFileLg" class="form-label">Large file input example</label> -->
-                        <input class="form-control form-control-lg" id="formFileLg" type="file">
+                        <input class="form-control form-control-lg" name="file_name" id="formFileLg" type="file">
                     </div>
 
                     <div class="col-12">
                         <button class="btn btn-primary" type="submit">Submit form</button>
+                    </div>
+                    <div class="col-12">
+                        <i>{{info}}</i>
                     </div>
                 </div>
             </form>

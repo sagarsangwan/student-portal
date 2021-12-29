@@ -1,5 +1,7 @@
 from logging import info
 import re
+from MySQLdb import Binary
+from MySQLdb.cursors import Cursor
 from flask import Flask, render_template, request
 import json
 import os
@@ -146,7 +148,25 @@ def add_data():
         print(courses)
         
         return render_template("pages/add_data.html", subject = subject, courses = courses)
-    # elif request.method == "POST":
+    elif request.method == "POST":
+        course_name = request.form["course_name"]
+        subject_name = request.form["subject_name1"]
+        file_name = request.files["file_name"]
+        file_name.save(file_name.filename)
+        # with open(file_name, 'rb'):
+        #     Binarydata = file_name.read()
+        cur = mysql.connection.cursor() 
+        cur.execute("INSERT INTO user_data(Course_name, subject_name, user_data) values(%s, %s, %s)", (course_name, subject_name, file_name))   
+        mysql.connection.commit()
+        cur.close()
+        return render_template("pages/add_data.html", info = "Thanku for adding")
+@app.route("/download")
+def download():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT user_data FROM user_data")
+    result = cur.fetchall()
+    print(result)
+    return result
 
 @app.route("/feedback", methods = ['GET', 'POST'])
 def feedback():
