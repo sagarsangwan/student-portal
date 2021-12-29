@@ -2,8 +2,7 @@
 {% block content %}
 <ul>
     {% for i in value %}
-    <li>{{i}}</li>
+    <li> <a href="{{i}}" download="test.pdf">download</a> </li>
     {% endfor %}
 </ul>
-
 {% endblock %}

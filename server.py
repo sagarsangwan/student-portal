@@ -142,13 +142,15 @@ def feedback():
 @app.route("/subject_detail/<id>")
 def subject_detail(id):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT question_papers FROM subjects WHERE id =" + id)
+    cur.execute("SELECT syllabus FROM subjects WHERE id =" + id)
     detail = cur.fetchall()
     detail = list(detail)
     detail = detail[0][0]
-    detail = detail.split(",")
-    print(detail)
-    return render_template("pages/subject_detail.html", value = detail)
+    # detail = detail
+    d = []
+    d.append(detail)
+    print(d)
+    return render_template("pages/subject_detail.html", value = d)
 if __name__ == "__main__":
     app.run(debug=True)
 
