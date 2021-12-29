@@ -134,13 +134,19 @@ def Dashboard():
     return render_template("pages/Dashboard.html")
 
 
-@app.route("/add_data")
+@app.route("/add_data", methods = ["GET", "POST"])
 def add_data():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT subject_name FROM subjects")
-    result = cur.fetchall()
-    print(result)
-    return render_template("pages/add_data.html", value = result)
+    if request.method == "GET":
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT id, subject_name FROM subjects")
+        subject = cur.fetchall()
+        print(subject)
+        cur.execute("SELECT id, course_name FROM courses")
+        courses = cur.fetchall()
+        print(courses)
+        
+        return render_template("pages/add_data.html", subject = subject, courses = courses)
+    # elif request.method == "POST":
 
 @app.route("/feedback", methods = ['GET', 'POST'])
 def feedback():
