@@ -128,8 +128,9 @@ def Dashboard():
             cur = mysql.connection.cursor()
             cur.execute("SELECT id, user_name, email, messages FROM messages")
             result = cur.fetchall()
-            print(result[1])
             return render_template("pages/Login.html", value = result)
+        else:
+            return render_template("pages/Dashboard.html", info = "wrong user_name or password")
     return render_template("pages/Dashboard.html")
 
 
