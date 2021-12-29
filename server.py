@@ -134,9 +134,9 @@ def Dashboard():
     return render_template("pages/Dashboard.html")
 
 
-@app.route("/search_result")
-def search():
-    return render_template("pages/search.html")
+@app.route("/add_data")
+def add_data():
+    return render_template("pages/add_data.html")
 
 @app.route("/feedback", methods = ['GET', 'POST'])
 def feedback():
