@@ -118,7 +118,19 @@ def subject(id):
         subject_head = subject_head[0]
         return render_template("pages/subject.html", subject_head1 = subject_head, id1 = id)
     
-
+@app.route("/Dashboard", methods = ["GET", "POST"] )
+def Dashboard():
+    if request.method == "POST":
+        details = request.form
+        user_name = details["user_name"]
+        password = details["password"]
+        if user_name == "sagarsangwan" and password == "password1":
+            cur = mysql.connection.cursor()
+            cur.execute("SELECT id, user_name, email, messages FROM messages")
+            result = cur.fetchall()
+            print(result[1])
+            return render_template("pages/Login.html", value = result)
+    return render_template("pages/Dashboard.html")
 
 
 @app.route("/search_result")
@@ -133,7 +145,7 @@ def feedback():
         emails = details["email"]
         messages = details["message"]
         cur = mysql.connection.cursor()
-        cur.execute ("INSERT INTO user(name, email, message) values(%s, %s, %s)", (names, emails, messages))
+        cur.execute ("INSERT INTO messages(user_name, email, messages) values(%s, %s, %s)", (names, emails, messages))
         mysql.connection.commit()
         cur.close()
         return render_template("pages/feedback.html", info = "message sent sucessfully")

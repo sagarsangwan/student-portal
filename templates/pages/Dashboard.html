@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+    <form class="row g-3" method="POST">
+        <h2 class="col-12 small-padding-bottom">
+            Login
+        </h2>        
+        <div class="col-sm-12 col-md-8 small-padding-bottom">
+            <input type="text" name="user_name" class="form-control" id="inputEmail4" placeholder="enter user_name">
+        </div>
+        <div class="col-sm-12 col-md-8 small-padding-bottom">          
+            <input type="password" name="password" class="form-control" id="inputPassword4" placeholder="enter password">
+        </div>
+        <div class="col-12 small-padding-bottom">
+            <button type="submit" class="btn btn-primary">Sign in</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
