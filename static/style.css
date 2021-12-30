@@ -5,7 +5,9 @@
     padding: 24px;
     
 }
-
+.no-underline{
+    text-decoration: none;
+}
 
 .small-padding-bottom{
     padding-bottom: 24px;
