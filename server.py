@@ -1,4 +1,4 @@
-from logging import info
+from logging import debug, info
 import re
 from MySQLdb import Binary
 from MySQLdb.cursors import Cursor
@@ -65,7 +65,6 @@ def courses(id):
         cur.execute("SELECT subjects_ids FROM course_to_subjets WHERE course_id ="+id)
         subjects = cur.fetchall()
         subjects = subjects[0][0]
-        #subjects = subjects.split(",")
         cur.execute("SELECT course_name, course_desc FROM courses WHERE id ="+id)
         header_courses = cur.fetchall()
         header_courses = header_courses[0]
@@ -95,7 +94,6 @@ def courses(id):
             match = []
             for i in subject:    
                 match.extend(list(i))
-            print(match)
             search = request.form['search']
             matches = get_close_matches(search, match)  
             
@@ -103,7 +101,6 @@ def courses(id):
                 a = matches[0]
                 cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" + a + "%'OR subject_desc LIKE '%" + a + "%'OR subject_alt_name LIKE '%" + a + "%'")
                 sub = cur.fetchall()
-                print(sub)
                 return render_template("pages/search.html", value = sub)          
            
         
@@ -142,24 +139,25 @@ def add_data():
         cur = mysql.connection.cursor()
         cur.execute("SELECT id, subject_name FROM subjects")
         subject = cur.fetchall()
-        print(subject)
         cur.execute("SELECT id, course_name FROM courses")
         courses = cur.fetchall()
-        print(courses)
-        
         return render_template("pages/add_data.html", subject = subject, courses = courses)
     elif request.method == "POST":
-        course_name = request.form["course_name"]
+        course_name = request.form.getlist("course_name")
         subject_name = request.form["subject_name1"]
-        file_name = request.files["file_name"]
-        file_name.save(file_name.filename)
-        # with open(file_name, 'rb'):
-        #     Binarydata = file_name.read()
+        data = request.files["data"]
+        data.save(data.filename)
         cur = mysql.connection.cursor() 
-        cur.execute("INSERT INTO user_data(Course_name, subject_name, user_data) values(%s, %s, %s)", (course_name, subject_name, file_name))   
+        cur.execute("INSERT INTO user_data(Course_name, subject_name, user_data) values(%s, %s, %s)", (str(course_name) , subject_name, data))   
+        name = data.filename
+        os.remove(name)
+        cur.execute("SELECT id, subject_name FROM subjects")
+        subject = cur.fetchall()
+        cur.execute("SELECT id, course_name FROM courses")
+        courses = cur.fetchall()
         mysql.connection.commit()
         cur.close()
-        return render_template("pages/add_data.html", info = "Thanku for adding")
+        return render_template("pages/add_data.html", subject = subject, courses = courses, info = "Thanku for adding")
 @app.route("/download")
 def download():
     cur = mysql.connection.cursor()
@@ -189,7 +187,6 @@ def subject_detail(id):
     detail = cur.fetchall()
     detail = list(detail)
     detail = detail[0][0]
-    # detail = detail
     d = []
     d.append(detail)
     print(d)

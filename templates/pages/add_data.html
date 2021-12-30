@@ -9,14 +9,14 @@
                         <h5>Select Course</h5>
                     </div>
                     <div class="col-xs-12 col-md-3 small-padding-bottom">
-                        <ul class="list-group">
+                        <div class="list-group">
                             {% for course_name in courses %}
-                            <li class="list-group-item">
-                                <input class="form-check-input me-1" name="course_name" type="checkbox" value="{{course_name[0]}} ">
+                            <label class="list-group-item">
+                                <input class="form-check-input me-1" name="course_name" type="checkbox" value="{{course_name[0]}}">
                                 {{course_name[1]}}
-                            </li>
+                            </label>
                             {% endfor %}
-                        </ul>
+                        </div>
                     </div>
                     <div class="col-12">
                         <h5>Select subject name</h5>
@@ -33,7 +33,7 @@
                         <h5>Select pdf file</h5>
                     </div>
                     <div class="col-12 small-padding-bottom">
-                        <input class="form-control form-control-lg" name="file_name" id="formFileLg" type="file">
+                        <input class="form-control form-control-lg" name="data" id="formFileLg" type="file">
                     </div>
 
                     <div class="col-12 small-padding-bottom">
