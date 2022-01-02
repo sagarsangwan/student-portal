@@ -228,10 +228,10 @@ def download(id):
     return send_file(result_bytes, as_attachment=True, download_name="test.jpg")
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template("pages/404.html")
+    return render_template("pages/404.html"), 400
 @app.errorhandler(500)
 def internal_server_error(e):
-    return render_template("pages/500.html")
+    return render_template("pages/500.html"), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
