@@ -2,6 +2,7 @@ from logging import debug, info
 import re
 from io import BytesIO
 from MySQLdb import Binary
+import base64
 from MySQLdb.cursors import Cursor
 from flask import Flask, render_template, request, make_response, send_file
 import json
@@ -205,25 +206,29 @@ def subject_detail(id):
 @app.route("/download/<id>")
 def download(id):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT user_data FROM user_data WHERE id=" + id)
+    cur.execute("SELECT user_data FROM user_data")
     result1 = cur.fetchall()
     # name = result1.filename
     result = result1[0][0]
-    result_bytes = BytesIO(result)
+    result_bytes = BytesIO(result1)
     print(result)
+    # binary_data = base64.b64decode(result)
+    # bi = base64.b64decode(binary_data)
     # response = make_response(result[0][0])
     # response.headers['Content-Type'] = 'application/pdf'
     # response.headers['Content-Disposition'] = \
     #     'inline; filename=%s.pdf' % 'yourfilename'
     # return response
-    return send_file(
-        result_bytes,
-        mimetype='application/pdf',
-        as_attachment=True,
-        download_name='w.pdf'
-    )
-    # return send_file(BytesIO(result), as_attachment=True, download_name="test.pdf")
-
+    # return send_file(
+    #     result_bytes,
+    #     mimetype='application/pdf',
+    #     as_attachment=True,
+    #     download_name='w.pdf'
+    # )
+    return send_file(result_bytes, as_attachment=True, download_name="test.jpg")
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("pages/404.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
