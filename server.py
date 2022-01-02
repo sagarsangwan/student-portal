@@ -229,6 +229,9 @@ def download(id):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("pages/404.html")
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template("pages/500.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
