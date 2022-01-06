@@ -12,7 +12,8 @@
                         <div class="list-group">
                             {% for course_name in courses %}
                             <label class="list-group-item">
-                                <input class="form-check-input me-1" name="course_name" type="checkbox" value="{{course_name[0]}}">
+                                <input class="form-check-input me-1" name="course_name" type="checkbox"
+                                    value="{{course_name[0]}}">
                                 {{course_name[1]}}
                             </label>
                             {% endfor %}
@@ -47,7 +48,8 @@
                         <i>Only PDF File Supported</i>
                     </div>
                     <div class="col-12 small-padding-bottom">
-                        <input class="form-control form-control-lg" name="data" id="formFileLg" type="File" accept="application/pdf" />
+                        <input class="form-control form-control-lg" name="data" id="formFileLg" type="File"
+                            accept="application/pdf" />
                     </div>
 
                     <div class="col-12 small-padding-bottom">
@@ -58,6 +60,26 @@
                     </div>
                 </div>
             </form>
+
+        </div>
+        <div class="col-12">
+            {% if error %}
+            <div aria-live="polite" aria-atomic="true" class="toast-container position-absolute p-3 top-50 start-50 translate-middle">
+
+                <!-- Then put toasts within -->
+                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <!-- <img src="..." class="rounded me-2" alt="..."> -->
+                        <strong class="me-auto">Error</strong>
+                        <!-- <small>11 mins ago</small> -->
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        {{error}}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
