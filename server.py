@@ -1,18 +1,11 @@
-from logging import debug, info
 import re
-from io import BytesIO
-from MySQLdb import Binary
-import base64
-from MySQLdb.cursors import Cursor
 from flask import Flask, render_template, request, make_response, send_file
 import json
 import os
-from flask.wrappers import Response
 from flask_mysqldb import MySQL
 import difflib
 from difflib import get_close_matches
 
-# from werkzeug.utils import send_file
 
 app = Flask(__name__)
 
@@ -143,33 +136,34 @@ def Dashboard():
     return render_template("pages/Dashboard.html")
 
 
+    
+app.config["FILE_EXTENSION"] = ["PDF"]
+
 @app.route("/add_data", methods=["GET", "POST"])
 def add_data():
+    
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id, subject_name FROM subjects")
+    subject = cur.fetchall()
+    cur.execute("SELECT id, course_name FROM courses")
+    courses = cur.fetchall()
     if request.method == "GET":
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT id, subject_name FROM subjects")
-        subject = cur.fetchall()
-        cur.execute("SELECT id, course_name FROM courses")
-        courses = cur.fetchall()
+        cur.close()
         return render_template("pages/add_data.html", subject=subject, courses=courses)
     elif request.method == "POST":
         course_name = request.form.getlist("course_name")
         subject_name = request.form["subject_name1"]
         data = request.files["data"]
-        data.save(data.filename)
-        data = data.read()
-        # print( data.read())
-        cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO user_data(Course_name, subject_name, user_data) values(%s, %s, %s)",(course_name, subject_name, data))
-        # name = data.filename
-        # os.remove(name)
-        cur.execute("SELECT id, subject_name FROM subjects")
-        subject = cur.fetchall()
-        cur.execute("SELECT id, course_name FROM courses")
-        courses = cur.fetchall()
-        mysql.connection.commit()
-        cur.close()
-        return render_template("pages/add_data.html", subject=subject, courses=courses, info="Thanku for adding")
+        name = data.filename
+        ext = name.split(".")
+        if ext[-1].upper() in app.config["FILE_EXTENSION"]:
+            # data.save(data.filename)
+            # os.remove(name)
+            cur.close()
+            return render_template("pages/add_data.html",  subject=subject, courses=courses, info="Thanku for adding")
+        else:
+            return render_template("pages/add_data.html",  subject=subject, courses=courses, info="file must be a pdf")
+
 
 
 @app.route("/feedback", methods=['GET', 'POST'])
@@ -203,29 +197,6 @@ def subject_detail(id):
     return render_template("pages/subject_detail.html", value=d)
 
 
-@app.route("/download/<id>")
-def download(id):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT user_data FROM user_data")
-    result1 = cur.fetchall()
-    # name = result1.filename
-    result = result1[0][0]
-    result_bytes = BytesIO(result1)
-    print(result)
-    # binary_data = base64.b64decode(result)
-    # bi = base64.b64decode(binary_data)
-    # response = make_response(result[0][0])
-    # response.headers['Content-Type'] = 'application/pdf'
-    # response.headers['Content-Disposition'] = \
-    #     'inline; filename=%s.pdf' % 'yourfilename'
-    # return response
-    # return send_file(
-    #     result_bytes,
-    #     mimetype='application/pdf',
-    #     as_attachment=True,
-    #     download_name='w.pdf'
-    # )
-    return send_file(result_bytes, as_attachment=True, download_name="test.jpg")
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("pages/404.html"), 400
