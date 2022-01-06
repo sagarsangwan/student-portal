@@ -137,7 +137,7 @@ def Dashboard():
 
 
     
-app.config["FILE_EXTENSION"] = ["PDF"]
+FILE_EXTENSION = ["PDF"]
 
 @app.route("/add_data", methods=["GET", "POST"])
 def add_data():
@@ -151,7 +151,7 @@ def add_data():
         return render_template("pages/add_data.html", subject=subject, courses=courses)
     elif request.method == "POST":
         course_name = request.form.getlist("course_name")
-        subject_name = request.form["subject_name1"]
+        subject_name = request.form.get("subject_name1")
         data = request.files["data"]
         name = data.filename
         ext = name.split(".")
@@ -159,15 +159,14 @@ def add_data():
             # os.remove(name)
         cur.close()
         try:
-            if len(course_name)>0 and len(subject_name)>0 and ext[-1].upper() in app.config["FILE_EXTENSION"]:
-                return render_template("pages/add_data.html",  subject=subject, courses=courses, info="Thanku for adding")
-            elif len(course_name)<0:
+            if not course_name:
                 raise Exception("Please select course name")
-            elif len(subject_name)<0:
+            elif not subject_name:
                 raise Exception("Pease select subjects ")
-            elif ext[-1].upper() not in app.config["FILE_EXTENSION"]:
+            elif ext[-1].upper() not in FILE_EXTENSION:
                 raise Exception("File type must be a pdf")
-            
+
+            return render_template("pages/add_data.html",  subject=subject, courses=courses, info="Thanku for adding")
         except Exception as error:
                 print(error)
                 return render_template("pages/add_data.html",  subject=subject, courses=courses, error = error)

@@ -1,6 +1,12 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="container height">
+<style>
+    .page-add-data .alert{
+        margin-bottom: 0;
+    }
+</style>
+<div class="container height page-add-data">
     <div class="row">
         <div class="col">
             <form method="post" enctype="multipart/form-data">
@@ -64,21 +70,22 @@
         </div>
         <div class="col-12">
             {% if error %}
-            <div aria-live="polite" aria-atomic="true" class="toast-container position-absolute p-3 top-50 start-50 translate-middle">
-
-                <!-- Then put toasts within -->
-                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="toast-header">
-                        <!-- <img src="..." class="rounded me-2" alt="..."> -->
-                        <strong class="me-auto">Error</strong>
-                        <!-- <small>11 mins ago</small> -->
-                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                    <div class="toast-body">
-                        {{error}}
+            <div class="modal show" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="alert alert-danger">
+                            {{error}}
+                        </div>
                     </div>
                 </div>
             </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var myModal = new bootstrap.Modal(document.getElementById('errorModal'))
+                    myModal.show()
+                }, false);
+            </script>
             {% endif %}
         </div>
     </div>
