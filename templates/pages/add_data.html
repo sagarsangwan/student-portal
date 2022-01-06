@@ -2,7 +2,7 @@
 
 {% block content %}
 <style>
-    .page-add-data .alert{
+    .page-add-data .alert {
         margin-bottom: 0;
     }
 </style>
@@ -70,8 +70,7 @@
         </div>
         <div class="col-12">
             {% if error %}
-            <div class="modal show" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel"
-                aria-hidden="true">
+            <div class="modal show" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="alert alert-danger">
@@ -81,7 +80,7 @@
                 </div>
             </div>
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
+                document.addEventListener('DOMContentLoaded', function () {
                     var myModal = new bootstrap.Modal(document.getElementById('errorModal'))
                     myModal.show()
                 }, false);
