@@ -141,7 +141,6 @@ app.config["FILE_EXTENSION"] = ["PDF"]
 
 @app.route("/add_data", methods=["GET", "POST"])
 def add_data():
-    
     cur = mysql.connection.cursor()
     cur.execute("SELECT id, subject_name FROM subjects")
     subject = cur.fetchall()
@@ -156,13 +155,22 @@ def add_data():
         data = request.files["data"]
         name = data.filename
         ext = name.split(".")
-        if ext[-1].upper() in app.config["FILE_EXTENSION"]:
             # data.save(data.filename)
             # os.remove(name)
-            cur.close()
-            return render_template("pages/add_data.html",  subject=subject, courses=courses, info="Thanku for adding")
-        else:
-            return render_template("pages/add_data.html",  subject=subject, courses=courses, info="file must be a pdf")
+        cur.close()
+        try:
+            if len(course_name)>0 and len(subject_name)>0 and ext[-1].upper() in app.config["FILE_EXTENSION"]:
+                return render_template("pages/add_data.html",  subject=subject, courses=courses, info="Thanku for adding")
+            elif len(course_name)<0:
+                raise Exception("Please select course name")
+            elif len(subject_name)<0:
+                raise Exception("Pease select subjects ")
+            elif ext[-1].upper() not in app.config["FILE_EXTENSION"]:
+                raise Exception("File type must be a pdf")
+            
+        except Exception as error:
+                print(error)
+                return render_template("pages/add_data.html",  subject=subject, courses=courses, error = error)
 
 
 
