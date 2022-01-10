@@ -1,5 +1,5 @@
 import re
-from flask import Flask, render_template, request, make_response, send_file
+from flask import Flask, render_template, request, make_response, send_file, redirect
 import json
 import os
 from flask_mysqldb import MySQL
@@ -190,6 +190,18 @@ def feedback():
     return render_template("pages/feedback.html")
 
 
+@app.route("/question_paper_details/<id>")
+def question_paper_detail(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT question_papers FROM subjects WHERE id ="+id)
+    sub_name = cur.fetchall()[0][0]
+    print((sub_name))
+    cur.execute(
+        "SELECT link FROM question_paper WHERE id =" + sub_name)
+    detail = cur.fetchall()[0][0]
+    return redirect(detail)
+
+
 @app.route("/subject_detail/<id>")
 def subject_detail(id):
     cur = mysql.connection.cursor()
@@ -199,16 +211,7 @@ def subject_detail(id):
     cur.execute(
         "SELECT link, year FROM question_paper WHERE id =" + sub_name)
     detail = cur.fetchall()[0]
-    print(list(detail))
-
-    detail = list(detail)
-    # detail = detail[0]
-    # d = []
-    # for i in detail:
-    #     d.append(i[0])
-    # print(d)
-
-    return render_template("pages/subject_detail.html", value=detail)
+    return render_template("pages/subject_detail.html", value=list(detail))
 
 
 @app.errorhandler(404)
