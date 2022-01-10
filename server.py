@@ -10,9 +10,9 @@ from difflib import get_close_matches
 app = Flask(__name__)
 
 app.config["MYSQL_HOST"] = "localhost"
-app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = "admin"
-app.config["MYSQL_DB"] = "users"
+app.config["MYSQL_USER"] = "sagar"
+app.config["MYSQL_PASSWORD"] = "password"
+app.config["MYSQL_DB"] = "student-portal"
 
 mysql = MySQL(app)
 
@@ -63,15 +63,17 @@ def courses(id):
         cur = mysql.connection.cursor()
         cur.execute(
             "SELECT subjects_ids FROM course_to_subjets WHERE course_id ="+id)
-        subjects = cur.fetchall()
-        subjects = subjects[0][0]
+        subjects = cur.fetchall()[0][0]
+        # subjects = sub.split(",")
+        # subjects = subjects[0]
+        print(subjects)
         cur.execute(
             "SELECT course_name, course_desc FROM courses WHERE id ="+id)
         header_courses = cur.fetchall()
         header_courses = header_courses[0]
         header_courses = list(header_courses)
         cur.execute(
-            "SELECT id, subject_name, subject_desc FROM subjects WHERE id IN " + subjects)
+            "SELECT id, subject_name, subject_desc FROM subjects WHERE id IN (" + subjects + ")")
         s = cur.fetchall()
         return render_template("pages/courses.html", header=header_courses, s1=s,  subject=subjects)
     elif request.method == 'POST':
@@ -136,8 +138,8 @@ def Dashboard():
     return render_template("pages/Dashboard.html")
 
 
-    
 FILE_EXTENSION = ["PDF"]
+
 
 @app.route("/add_data", methods=["GET", "POST"])
 def add_data():
@@ -155,8 +157,8 @@ def add_data():
         data = request.files["data"]
         name = data.filename
         ext = name.split(".")
-            # data.save(data.filename)
-            # os.remove(name)
+        # data.save(data.filename)
+        # os.remove(name)
         cur.close()
         try:
             if not course_name:
@@ -168,9 +170,8 @@ def add_data():
 
             return render_template("pages/add_data.html",  subject=subject, courses=courses, info="Thanku for adding")
         except Exception as error:
-                print(error)
-                return render_template("pages/add_data.html",  subject=subject, courses=courses, error = error)
-
+            print(error)
+            return render_template("pages/add_data.html",  subject=subject, courses=courses, error=error)
 
 
 @app.route("/feedback", methods=['GET', 'POST'])
@@ -181,7 +182,8 @@ def feedback():
         emails = details["email"]
         messages = details["message"]
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO messages(user_name, email, messages) values(%s, %s, %s)",(names, emails, messages))
+        cur.execute("INSERT INTO messages(user_name, email, messages) values(%s, %s, %s)",
+                    (names, emails, messages))
         mysql.connection.commit()
         cur.close()
         return render_template("pages/feedback.html", info="message sent sucessfully")
@@ -207,9 +209,12 @@ def subject_detail(id):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("pages/404.html"), 400
+
+
 @app.errorhandler(500)
 def internal_server_error(e):
     return render_template("pages/500.html"), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)
