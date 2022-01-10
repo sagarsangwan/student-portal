@@ -193,17 +193,22 @@ def feedback():
 @app.route("/subject_detail/<id>")
 def subject_detail(id):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT id FROM user_data ")
-    detail = cur.fetchall()
-    detail = list(detail)
-    # detail = detail[0][0]
-    d = []
-    for i in detail:
-        d.append(i[0])
-    print(d)
-    print(detail)
+    cur.execute("SELECT question_papers FROM subjects WHERE id ="+id)
+    sub_name = cur.fetchall()[0][0]
+    print((sub_name))
+    cur.execute(
+        "SELECT link, year FROM question_paper WHERE id =" + sub_name)
+    detail = cur.fetchall()[0]
+    print(list(detail))
 
-    return render_template("pages/subject_detail.html", value=d)
+    detail = list(detail)
+    # detail = detail[0]
+    # d = []
+    # for i in detail:
+    #     d.append(i[0])
+    # print(d)
+
+    return render_template("pages/subject_detail.html", value=detail)
 
 
 @app.errorhandler(404)

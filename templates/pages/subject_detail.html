@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <ul>
-    {% for i in value %}
-    <li> <a href="/download/{{i}}" download="test.pdf">download</a> </li>
-    {% endfor %}
+    <li> <a href="{{value[0]}}">{{value[1]}}</a> </li>
+
 </ul>
 {% endblock %}
