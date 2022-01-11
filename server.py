@@ -19,13 +19,13 @@ mysql = MySQL(app)
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "SELECT JSON_ARRAYAGG(JSON_OBJECT('id', ID, 'course_name', course_name, 'course_desc', course_desc)) FROM courses")
+    table = cur.fetchall()
+    mysql.connection.commit()
+    cur.close()
     if request.method == 'GET':
-        cur = mysql.connection.cursor()
-        cur.execute(
-            "SELECT JSON_ARRAYAGG(JSON_OBJECT('id', ID, 'course_name', course_name, 'course_desc', course_desc)) FROM courses")
-        table = cur.fetchall()
-        mysql.connection.commit()
-        cur.close()
         return render_template("pages/home.html", value=json.loads(table[0][0]))
     elif request.method == 'POST':
         search = request.form['search']
@@ -34,7 +34,6 @@ def home():
                     search + "%'OR subject_desc LIKE '%" + search + "%'OR subject_alt_name LIKE '%" + search + "%'")
         result = cur.fetchall()
         if len(result) > 0:
-            print(result)
             return render_template("pages/search.html", value=result)
         else:
             cur = mysql.connection.cursor()
@@ -55,6 +54,8 @@ def home():
                 sub = cur.fetchall()
                 print(sub)
                 return render_template("pages/search.html", value=sub)
+            else:
+                return render_template("pages/home.html", value=json.loads(table[0][0]), info="sorry nothing found")
 
 
 @app.route("/course/<id>", methods=['GET', 'POST'])
