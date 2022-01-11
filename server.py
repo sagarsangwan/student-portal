@@ -17,7 +17,7 @@ app.config["MYSQL_DB"] = "student-portal"
 mysql = MySQL(app)
 
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/", methods=['GET'])
 def home():
     cur = mysql.connection.cursor()
     cur.execute(
@@ -25,37 +25,36 @@ def home():
     table = cur.fetchall()
     mysql.connection.commit()
     cur.close()
-    if request.method == 'GET':
-        return render_template("pages/home.html", value=json.loads(table[0][0]))
-    elif request.method == 'POST':
-        search = request.form['search']
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
-                    search + "%'OR subject_desc LIKE '%" + search + "%'OR subject_alt_name LIKE '%" + search + "%'")
-        result = cur.fetchall()
-        if len(result) > 0:
-            return render_template("pages/search.html", value=result)
-        else:
-            cur = mysql.connection.cursor()
-            cur.execute("SELECT subject_name, subject_desc FROM subjects ")
-            subject = cur.fetchall()
-            subject = list(subject)
-            match = []
-            for i in subject:
-                match.extend(list(i))
-            print(match)
-            search = request.form['search']
-            matches = get_close_matches(search, match)
 
-            if len(matches) > 0:
-                a = matches[0]
-                cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
-                            a + "%'OR subject_desc LIKE '%" + a + "%'OR subject_alt_name LIKE '%" + a + "%'")
-                sub = cur.fetchall()
-                print(sub)
-                return render_template("pages/search.html", value=sub)
-            else:
-                return render_template("pages/home.html", value=json.loads(table[0][0]), info="sorry nothing found")
+    return render_template("pages/home.html", value=json.loads(table[0][0]))
+
+
+@app.route("/search")
+def search():
+    search = request.args.get('search')
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
+                search + "%'OR subject_desc LIKE '%" + search + "%'OR subject_alt_name LIKE '%" + search + "%'")
+    result = cur.fetchall()
+    if len(result) > 0:
+        return render_template("pages/search.html", value=result)
+    else:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT subject_name, subject_desc id FROM subjects ")
+        subject = cur.fetchall()
+        subject = list(subject)
+        match = []
+        for i in subject:
+            match.extend(list(i))
+        matches = get_close_matches(search, match)
+
+        if len(matches) > 0:
+            a = matches[0]
+            cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
+                        a + "%'OR subject_desc LIKE '%" + a + "%'OR subject_alt_name LIKE '%" + a + "%'")
+            sub = cur.fetchall()
+        else:
+            return render_template("pages/search.html", info="nothing found")
 
 
 @app.route("/course/<id>", methods=['GET', 'POST'])
