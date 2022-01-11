@@ -2,15 +2,19 @@
 {% block content %}
 
 <div class="container height">
+    <div class="row">
+        <div class="col-xs-12 col-md-4 home-search-pading">
+            <h5> {{value|length}} results found for <b>"{{search}}"</b>:</h5>
+        </div>
+    </div>
     <div class="row justify-content-center">
-
         {% for sub in value %}
         <div class="col-xs-12 col-md-4 home-search-pading">
             <div class="card text-white bg-dark mb-3">
                 <div class="card-body">
                     <h5 class="card-title">{{sub[0]}}</h5>
                     <p class="card-text"> {{sub[1]}} </p>
-                    <!-- <a href="/subject/{{sub[2]}}" class="btn btn-primary">Explore</a> -->
+                    <a href="/subject/{{sub[2]}}" class="btn btn-primary">Explore</a>
                 </div>
             </div>
         </div>

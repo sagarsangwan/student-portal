@@ -2,99 +2,10 @@
 
 
 {% block content %}
-<style>
-    .home-search-container {
-        background-color: #f9fff3;
-    }
 
-    .home-search {
-        min-height: 70vh;
-        margin-bottom: 24px;
-        background-image: url(static/images/cover_pic.jpg);
-        background-size: 540px;
-        background-repeat: no-repeat;
-        background-position: right;
-    }
-
-    .home-search button,
-    .home-search input {
-        width: 100%;
-    }
-
-    .home-search .input-container {
-        display: inline-flex;
-        width: 500px;
-    }
-
-    .home-search .filter-container {
-        display: inline-flex;
-        width: 120px;
-    }
-
-    .home-search .button-container {
-        display: inline-flex;
-        width: 120px;
-    }
-
-    @media(max-width: 768px) {
-        .home-search .input-container {
-            width: 100%;
-            margin-bottom: 16px;
-        }
-
-        .home-search .filter-container {
-            width: 100%;
-            margin-bottom: 16px
-        }
-
-        .home-search .button-container {
-
-            width: 100%;
-            margin-bottom: 16px
-        }
-
-        .home-search {
-            background-position: -61px 60px;
-        }
-
-    }
-
-    .nothing-found {
-        color: red;
-    }
-</style>
-
-
-
-
-
-<form class="home-search-container" method="GET" action="/search">
-    <div class="container">
-        <div class="row  home-search justify-content-center align-items-center">
-            <div class="col">
-                <div>
-                    <h1><b> Student Portal </b></h1>
-                    <p>
-                        Making it easy for students to find resources
-                    </p>
-                    <br><br>
-                </div>
-                <div class="input-container">
-                    <input type="text" class="form-control" name="search" type="text"
-                        aria-label="Text input with dropdown button">
-                </div>
-                <div class="button-container">
-                    <button class="btn btn-success" type="submit">Search</button>
-
-                </div>
-                <div class="input-container">
-                    <p class="nothing-found"> <i>{{info}}</i> </p>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</form>
+{% with course_name_header="Student Portal", course_subject_header="Making it easy for students to find resources" %}
+{% include "/components/uni_search.html" %}
+{% endwith %}
 
 <div class="container height">
     <div class="row justify-content-center">

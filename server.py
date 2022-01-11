@@ -37,7 +37,7 @@ def search():
                 search + "%'OR subject_desc LIKE '%" + search + "%'OR subject_alt_name LIKE '%" + search + "%'")
     result = cur.fetchall()
     if len(result) > 0:
-        return render_template("pages/search.html", value=result)
+        return render_template("pages/search.html", value=result, search=search)
     else:
         cur = mysql.connection.cursor()
         cur.execute("SELECT subject_name, subject_desc id FROM subjects ")
@@ -54,7 +54,7 @@ def search():
                         a + "%'OR subject_desc LIKE '%" + a + "%'OR subject_alt_name LIKE '%" + a + "%'")
             sub = cur.fetchall()
         else:
-            return render_template("pages/search.html", info="nothing found")
+            return render_template("pages/search.html", search=search)
 
 
 @app.route("/course/<id>", methods=['GET', 'POST'])
