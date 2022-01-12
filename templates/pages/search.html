@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container height">
-    <div class="row">
-        <div class="col-xs-12 col-md-4 home-search-pading">
-            <h5> {{value|length}} results found for <b>"{{search}}"</b>:</h5>
-        </div>
-    </div>
+{% set sub_heading %}
+    <h5> {{value|length}} result(s) found for <b>"{{search}}"</b></h5>
+{% endset %}
+
+{% with course_name_header="Student Portal", course_subject_header=sub_heading %}
+{% include "/components/uni_search.html" %}
+{% endwith %}
+
+<div class="container">
     <div class="row justify-content-center">
         {% for sub in value %}
         <div class="col-xs-12 col-md-4 home-search-pading">

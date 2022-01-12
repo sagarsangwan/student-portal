@@ -76,42 +76,9 @@ def courses(id):
             "SELECT id, subject_name, subject_desc FROM subjects WHERE id IN (" + subjects + ")")
         s = cur.fetchall()
         return render_template("pages/courses.html", header=header_courses, s1=s,  subject=subjects)
-    elif request.method == 'POST':
-        global search1
-        search1 = request.form["search"]
-        cur = mysql.connection.cursor()
-        cur.execute(
-            "SELECT subjects_ids FROM course_to_subjets WHERE course_id ="+id)
-        subject = cur.fetchall()
-        subject = subject[0][0]
-        print(subject)
-        cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE (subject_name LIKE '%" + search1 +
-                    "%'OR subject_desc LIKE '%" + search1 + "%'OR subject_alt_name LIKE '%" + search1 + "%') AND id IN " + subject)
-        sub = cur.fetchall()
-
-        if len(sub) > 0:
-            print(sub)
-            return render_template("pages/search.html", value=sub)
-        else:
-            cur = mysql.connection.cursor()
-            cur.execute("SELECT subject_name, subject_desc FROM subjects ")
-            subject = cur.fetchall()
-            subject = list(subject)
-            match = []
-            for i in subject:
-                match.extend(list(i))
-            search = request.form['search']
-            matches = get_close_matches(search, match)
-
-            if len(matches) > 0:
-                a = matches[0]
-                cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
-                            a + "%'OR subject_desc LIKE '%" + a + "%'OR subject_alt_name LIKE '%" + a + "%'")
-                sub = cur.fetchall()
-                return render_template("pages/search.html", value=sub)
 
 
-@app.route("/subject/<id>", methods=['GET', 'POST'])
+@app.route("/subject/<id>", methods=['GET'])
 def subject(id):
     if request.method == 'GET':
         cur = mysql.connection.cursor()
