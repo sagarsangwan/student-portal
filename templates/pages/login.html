@@ -6,23 +6,22 @@
         <div class="col">
             <h2 class="padding-bottom-small">Login</h2>
 
-            <form method="POST" action="/dashboard">
+            <form method="POST">
                 <div class="row">
                     <div class="col-xs-12 col-md-8 padding-bottom-small">
-                        <input type="text" name="username" required class="form-control" placeholder="enter user name"
-                            aria-label="First name">
+                        <input type="text" name="username" required class="form-control" placeholder="enter user name">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-md-8 padding-bottom-small">
-                        <input name="password" required class="form-control" placeholder="enter password"
-                            aria-label="your email">
+                        <input name="password" required class="form-control" placeholder="enter password">
                     </div>
                 </div>
                 <div class="col-12">
                     <button class="btn btn-primary" type="submit" value="Login">Login</button>
                 </div>
             </form>
+            <i>{{info}}</i>
         </div>
     </div>
 </div>

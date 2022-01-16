@@ -89,22 +89,6 @@ def subject(id):
         return render_template("pages/subject.html", subject_head1=subject_head, id1=id)
 
 
-@app.route("/Dashboard", methods=["GET", "POST"])
-def Dashboard():
-    if request.method == "POST":
-        details = request.form
-        user_name = details["user_name"]
-        password = details["password"]
-        if user_name == "sagarsangwan" and password == "password1":
-            cur = mysql.connection.cursor()
-            cur.execute("SELECT id, user_name, email, messages FROM messages")
-            result = cur.fetchall()
-            return render_template("pages/Login.html", value=result)
-        else:
-            return render_template("pages/Dashboard.html", info="wrong user_name or password")
-    return render_template("pages/Dashboard.html")
-
-
 FILE_EXTENSION = ["PDF"]
 
 
@@ -181,30 +165,36 @@ def subject_detail(id):
     return render_template("pages/subject_detail.html", value=list(detail))
 
 
-default_user_id = "asdfkfiogaoigga"
+default_user_id = "asdfkfiogaoiggaa"
 
 
 @app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
     if request.method == "GET":
-        user_id = request.cookies.get('default_user_id')
+        user_id = request.cookies.get('session_id')
         if user_id == default_user_id:
-            return render_template("pages/dashboard.html")
+            cur = mysql.connection.cursor()
+            cur.execute("SELECT id, user_name, email, messages FROM messages")
+            result = cur.fetchall()
+            return render_template("pages/dashboard.html", value=result)
         else:
             return redirect("/login")
 
 
-@app.route("/login")
+@app.route("/login", methods=['GET', 'POST'])
 def login():
-    if request.method == "GET":
+    if request.method == 'GET':
         return render_template("pages/login.html")
-    else:
+    elif request.method == 'POST':
         user_name = request.form["username"]
-        password = request.form['password']
-        if user_name == "sagar" and password == "s":
+        password = request.form["password"]
+        if user_name == "sagarsangwan" and password == "password1":
+
             response = make_response(redirect('/dashboard'))
-        response.set_cookie('session_id', default_user_id)
-        return response
+            response.set_cookie('session_id', default_user_id)
+            return response
+        else:
+            return render_template("pages/login.html", info="wrong user_name or password")
 
 
 @app.errorhandler(404)
