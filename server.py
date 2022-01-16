@@ -181,6 +181,32 @@ def subject_detail(id):
     return render_template("pages/subject_detail.html", value=list(detail))
 
 
+default_user_id = "asdfkfiogaoigga"
+
+
+@app.route("/dashboard", methods=["GET", "POST"])
+def dashboard():
+    if request.method == "GET":
+        user_id = request.cookies.get('default_user_id')
+        if user_id == default_user_id:
+            return render_template("pages/dashboard.html")
+        else:
+            return redirect("/login")
+
+
+@app.route("/login")
+def login():
+    if request.method == "GET":
+        return render_template("pages/login.html")
+    else:
+        user_name = request.form["username"]
+        password = request.form['password']
+        if user_name == "sagar" and password == "s":
+            response = make_response(redirect('/dashboard'))
+        response.set_cookie('session_id', default_user_id)
+        return response
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("pages/404.html"), 400
