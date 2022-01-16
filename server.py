@@ -197,6 +197,13 @@ def login():
             return render_template("pages/login.html", info="wrong user_name or password")
 
 
+@app.route("/logout")
+def logout():
+    response = make_response(redirect('/dashboard'))
+    response.set_cookie('session_id', "")
+    return response
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("pages/404.html"), 400
