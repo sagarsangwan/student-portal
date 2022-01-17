@@ -5,6 +5,7 @@ import os
 from flask_mysqldb import MySQL
 import difflib
 from difflib import get_close_matches
+import random
 
 
 app = Flask(__name__)
@@ -89,22 +90,6 @@ def subject(id):
         return render_template("pages/subject.html", subject_head1=subject_head, id1=id)
 
 
-@app.route("/Dashboard", methods=["GET", "POST"])
-def Dashboard():
-    if request.method == "POST":
-        details = request.form
-        user_name = details["user_name"]
-        password = details["password"]
-        if user_name == "sagarsangwan" and password == "password1":
-            cur = mysql.connection.cursor()
-            cur.execute("SELECT id, user_name, email, messages FROM messages")
-            result = cur.fetchall()
-            return render_template("pages/Login.html", value=result)
-        else:
-            return render_template("pages/Dashboard.html", info="wrong user_name or password")
-    return render_template("pages/Dashboard.html")
-
-
 FILE_EXTENSION = ["PDF"]
 
 
@@ -179,6 +164,46 @@ def subject_detail(id):
         "SELECT link, year FROM question_paper WHERE id =" + sub_name)
     detail = cur.fetchall()[0]
     return render_template("pages/subject_detail.html", value=list(detail))
+
+
+seq = "fsiughauilggsgrgdrhiegrhu"
+default_user_id = random.choice(seq)
+
+
+@app.route("/dashboard", methods=["GET", "POST"])
+def dashboard():
+    if request.method == "GET":
+        user_id = request.cookies.get('session_id')
+        if user_id == default_user_id:
+            cur = mysql.connection.cursor()
+            cur.execute("SELECT id, user_name, email, messages FROM messages")
+            result = cur.fetchall()
+            return render_template("pages/dashboard.html", value=result)
+        else:
+            return redirect("/login")
+
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template("pages/login.html")
+    elif request.method == 'POST':
+        user_name = request.form["username"]
+        password = request.form["password"]
+        if user_name == "sagarsangwan" and password == "password1":
+
+            response = make_response(redirect('/dashboard'))
+            response.set_cookie('session_id', default_user_id)
+            return response
+        else:
+            return render_template("pages/login.html", info="wrong user_name or password")
+
+
+@app.route("/logout")
+def logout():
+    response = make_response(redirect('/dashboard'))
+    response.set_cookie('session_id', "")
+    return response
 
 
 @app.errorhandler(404)

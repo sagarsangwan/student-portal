@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 ">
+            <h2>User's Feedback</h2>
+        </div>
+        <div class="col-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">name</th>
+                        <th scope="col">email</th>
+                        <th scope="col">message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in value %}
+                    <tr>
+                        <td>{{i[0]}}</td>
+                        <td>{{i[1]}}</td>
+                        <td>{{i[2]}}</td>
+                        <td>{{i[3]}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <h2>user_data</h2>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 ">
+            <a class="btn btn-primary" href="/logout">Logout</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -2,7 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+student-portal-337420-e3207a01472a.json
+client_secrets.json
 # C extensions
 *.so
 
