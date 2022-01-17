@@ -5,6 +5,7 @@ import os
 from flask_mysqldb import MySQL
 import difflib
 from difflib import get_close_matches
+import random
 
 
 app = Flask(__name__)
@@ -165,7 +166,8 @@ def subject_detail(id):
     return render_template("pages/subject_detail.html", value=list(detail))
 
 
-default_user_id = "asdfkfiogaoiggaa"
+seq = "fsiughauilggsgrgdrhiegrhu"
+default_user_id = random.choice(seq)
 
 
 @app.route("/dashboard", methods=["GET", "POST"])
