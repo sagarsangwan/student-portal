@@ -6,19 +6,51 @@ from flask_mysqldb import MySQL
 import difflib
 from difflib import get_close_matches
 import random
-
+from dotenv import load_dotenv
+from apiclient.http import MediaFileUpload
+from apiclient.discovery import build
+from oauth2client.service_account import ServiceAccountCredentials
 
 app = Flask(__name__)
+app.config["MYSQL_HOST"] = os.environ.get('MYSQL_HOST')
+app.config["MYSQL_USER"] = os.environ.get('MYSQL_USER')
+app.config["MYSQL_PASSWORD"] = os.environ.get('MYSQL_PASSWORD')
+app.config["MYSQL_DB"] = os.environ.get('MYSQL_DB')
 
-app.config["MYSQL_HOST"] = "localhost"
-app.config["MYSQL_USER"] = "sagar"
-app.config["MYSQL_PASSWORD"] = "password"
-app.config["MYSQL_DB"] = "student-portal"
+load_dotenv('.env')
 
 mysql = MySQL(app)
 
 
-@app.route("/", methods=['GET'])
+seq = os.environ.get("RANDOM_SEQ_KEY")
+default_user_id = random.choice(seq)
+
+
+credentials = None
+service = None
+
+
+def getDriveCredentials():
+    scopes = [
+        'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/drive.file'
+    ]
+    keyfile_dict = os.environ.get(
+        "API_SERVICE_ID")
+    keyfile_dict = json.loads(keyfile_dict)
+
+    credentials = ServiceAccountCredentials.from_json_keyfile_dict(
+        keyfile_dict, scopes=scopes)
+
+    return credentials
+
+
+def getDriveService(credentials):
+    service = build('drive', 'v3', credentials=credentials)
+    return service
+
+
+@ app.route("/", methods=['GET'])
 def home():
     cur = mysql.connection.cursor()
     cur.execute(
@@ -27,10 +59,11 @@ def home():
     mysql.connection.commit()
     cur.close()
 
+    # print(os.environ.get("NAME"))
     return render_template("pages/home.html", value=json.loads(table[0][0]))
 
 
-@app.route("/search")
+@ app.route("/search")
 def search():
     search = request.args.get('search')
     cur = mysql.connection.cursor()
@@ -58,7 +91,7 @@ def search():
             return render_template("pages/search.html", search=search)
 
 
-@app.route("/course/<id>", methods=['GET', 'POST'])
+@ app.route("/course/<id>", methods=['GET', 'POST'])
 def courses(id):
     if request.method == 'GET':
         cur = mysql.connection.cursor()
@@ -107,11 +140,37 @@ def add_data():
         course_name = request.form.getlist("course_name")
         subject_name = request.form.get("subject_name1")
         data = request.files["data"]
-        name = data.filename
-        ext = name.split(".")
+        file_name = data.filename
+        ext = file_name.split(".")
+        file_metadata = {
+            'name': file_name,
+            'parents': ["1OinSd5vgKsTMEmUvAxejgLZC4EgqfJAk"],
+            'mimeType': 'application/pdf'
+        }
+        media = MediaFileUpload("Chemistry(12th)Mar2019.pdf", resumable=True)
+        file = service.files().create(body=file_metadata,
+                                      media_body=media, fields='id,name').execute()
+        file_id = file.get("id")
+        request_body = {
+            'role': 'reader',
+            'type': 'anyone'
+        }
+        response_permission = service.permissions().create(
+            fileId=file_id,
+            body=request_body
+        ).execute()
+
+        response_sharelink = service.files().get(
+            fileId=file_id,
+            fields="webViewLink"
+        ).execute()
+        print(course_name)
+        print(subject_name)
+        link = response_sharelink.get("webViewLink")
+        print(link)
         # data.save(data.filename)
         # os.remove(name)
-        cur.close()
+
         try:
             if not course_name:
                 raise Exception("Please select course name")
@@ -119,6 +178,12 @@ def add_data():
                 raise Exception("Pease select subjects ")
             elif ext[-1].upper() not in FILE_EXTENSION:
                 raise Exception("File type must be a pdf")
+            else:
+                for c_name in course_name:
+                    cur.execute("INSERT INTO user_data(course_name, subject_name, user_data) values(%s, %s, %s)", (
+                        c_name, subject_name, str(link)))
+            mysql.connection.commit()
+            cur.close()
 
             return render_template("pages/add_data.html",  subject=subject, courses=courses, info="Thanku for adding")
         except Exception as error:
@@ -166,10 +231,6 @@ def subject_detail(id):
     return render_template("pages/subject_detail.html", value=list(detail))
 
 
-seq = "fsiughauilggsgrgdrhiegrhu"
-default_user_id = random.choice(seq)
-
-
 @app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
     if request.method == "GET":
@@ -178,7 +239,12 @@ def dashboard():
             cur = mysql.connection.cursor()
             cur.execute("SELECT id, user_name, email, messages FROM messages")
             result = cur.fetchall()
-            return render_template("pages/dashboard.html", value=result)
+            cur.execute(
+                "SELECT * FROM user_data")
+            data = cur.fetchall()
+            cur.close()
+            print(data)
+            return render_template("pages/dashboard.html", value=result, data=data)
         else:
             return redirect("/login")
 
@@ -186,12 +252,17 @@ def dashboard():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template("pages/login.html")
+        user_id = request.cookies.get('session_id')
+        if user_id == default_user_id:
+
+            return redirect("/dashboard")
+        else:
+            return render_template("pages/login.html")
     elif request.method == 'POST':
         user_name = request.form["username"]
         password = request.form["password"]
-        if user_name == "sagarsangwan" and password == "password1":
 
+        if user_name == os.environ.get('DASHBOARD_USER_NAME') and password == os.environ.get('DASHBOARD_PASSWORD'):
             response = make_response(redirect('/dashboard'))
             response.set_cookie('session_id', default_user_id)
             return response
@@ -217,4 +288,7 @@ def internal_server_error(e):
 
 
 if __name__ == "__main__":
+    credentials = getDriveCredentials()
+    service = getDriveService(credentials)
+
     app.run(debug=True)
