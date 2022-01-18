@@ -7,8 +7,8 @@ import difflib
 from difflib import get_close_matches
 import random
 from dotenv import load_dotenv
-from apiclient.http import MediaFileUpload
-from apiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
 app = Flask(__name__)
@@ -139,13 +139,14 @@ def add_data():
         subject_name = request.form.get("subject_name1")
         data = request.files["data"]
         file_name = data.filename
+        data.save(file_name)
         ext = file_name.split(".")
         file_metadata = {
             'name': file_name,
             'parents': ["1OinSd5vgKsTMEmUvAxejgLZC4EgqfJAk"],
             'mimeType': 'application/pdf'
         }
-        media = MediaFileUpload("Chemistry(12th)Mar2019.pdf", resumable=True)
+        media = MediaFileUpload(file_name, resumable=True)
         file = service.files().create(body=file_metadata,
                                       media_body=media, fields='id,name').execute()
         file_id = file.get("id")
@@ -162,12 +163,8 @@ def add_data():
             fileId=file_id,
             fields="webViewLink"
         ).execute()
-        print(course_name)
-        print(subject_name)
         link = response_sharelink.get("webViewLink")
-        print(link)
-        # data.save(data.filename)
-        # os.remove(name)
+        os.remove(file_name)
 
         try:
             if not course_name:
@@ -189,7 +186,7 @@ def add_data():
             return render_template("pages/add_data.html",  subject=subject, courses=courses, error=error)
 
 
-@app.route("/feedback", methods=['GET', 'POST'])
+@ app.route("/feedback", methods=['GET', 'POST'])
 def feedback():
     if request.method == "POST":
         details = request.form
@@ -205,7 +202,7 @@ def feedback():
     return render_template("pages/feedback.html")
 
 
-@app.route("/question_paper_details/<id>")
+@ app.route("/question_paper_details/<id>")
 def question_paper_detail(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT question_papers FROM subjects WHERE id ="+id)
@@ -217,7 +214,7 @@ def question_paper_detail(id):
     return redirect(detail)
 
 
-@app.route("/subject_detail/<id>")
+@ app.route("/subject_detail/<id>")
 def subject_detail(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT question_papers FROM subjects WHERE id ="+id)
@@ -229,7 +226,7 @@ def subject_detail(id):
     return render_template("pages/subject_detail.html", value=list(detail))
 
 
-@app.route("/dashboard", methods=["GET", "POST"])
+@ app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
     if request.method == "GET":
         user_id = request.cookies.get('session_id')
@@ -247,7 +244,7 @@ def dashboard():
             return redirect("/login")
 
 
-@app.route("/login", methods=['GET', 'POST'])
+@ app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         user_id = request.cookies.get('session_id')
@@ -268,19 +265,19 @@ def login():
             return render_template("pages/login.html", info="wrong user_name or password")
 
 
-@app.route("/logout")
+@ app.route("/logout")
 def logout():
     response = make_response(redirect('/dashboard'))
     response.set_cookie('session_id', "")
     return response
 
 
-@app.errorhandler(404)
+@ app.errorhandler(404)
 def page_not_found(e):
     return render_template("pages/404.html"), 400
 
 
-@app.errorhandler(500)
+@ app.errorhandler(500)
 def internal_server_error(e):
     return render_template("pages/500.html"), 500
 
