@@ -54,13 +54,13 @@ def getDriveService(credentials):
 def home():
     cur = mysql.connection.cursor()
     cur.execute(
-        "SELECT JSON_ARRAYAGG(JSON_OBJECT('id', ID, 'course_name', course_name, 'course_desc', course_desc)) FROM courses")
+        "SELECT ID, course_name, course_desc FROM courses")
     table = cur.fetchall()
     mysql.connection.commit()
     cur.close()
 
     # print(os.environ.get("NAME"))
-    return render_template("pages/home.html", value=json.loads(table[0][0]))
+    return render_template("pages/home.html", value=list(table))
 
 
 @ app.route("/search")
