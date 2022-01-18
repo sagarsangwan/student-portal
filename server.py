@@ -21,10 +21,8 @@ load_dotenv('.env')
 
 mysql = MySQL(app)
 
-
 seq = os.environ.get("RANDOM_SEQ_KEY")
 default_user_id = random.choice(seq)
-
 
 credentials = None
 service = None
