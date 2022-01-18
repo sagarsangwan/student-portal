@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
+from httplib2 import Http
 
 app = Flask(__name__)
 app.config["MYSQL_HOST"] = os.environ.get('MYSQL_HOST')
@@ -44,7 +45,9 @@ def getDriveCredentials():
 
 
 def getDriveService(credentials):
-    service = build('drive', 'v3', credentials=credentials)
+    http_auth = credentials.authorize(Http())
+    service = build("drive", "v3", http=http_auth)
+
     return service
 
 
