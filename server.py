@@ -60,7 +60,6 @@ def home():
     mysql.connection.commit()
     cur.close()
 
-    # print(os.environ.get("NAME"))
     return render_template("pages/home.html", value=list(table))
 
 
@@ -106,18 +105,14 @@ def courses(id):
         cur.execute(
             "SELECT subjects_ids FROM course_to_subjets WHERE course_id ="+id)
         subjects = cur.fetchall()[0][0]
-        # subjects = sub.split(",")
-        # subjects = subjects[0]
-        print(subjects)
         cur.execute(
             "SELECT course_name, course_desc FROM courses WHERE id ="+id)
         header_courses = cur.fetchall()
         header_courses = header_courses[0]
-        header_courses = list(header_courses)
         cur.execute(
             "SELECT id, subject_name, subject_desc FROM subjects WHERE id IN (" + subjects + ")")
         s = cur.fetchall()
-        return render_template("pages/courses.html", header=header_courses, s1=s,  subject=subjects)
+        return render_template("pages/courses.html", header=list(header_courses), s1=s,  subject=subjects)
 
 
 @app.route("/subject/<id>", methods=['GET'])
@@ -127,8 +122,7 @@ def subject(id):
         cur.execute(
             "SELECT subject_name, subject_desc, id FROM subjects WHERE id IN (" + id + ")")
         subject_head = cur.fetchall()
-        subject_head = subject_head[0]
-        return render_template("pages/subject.html", subject_head1=subject_head, id1=id)
+        return render_template("pages/subject.html", subject_head1=subject_head[0], id1=id)
 
 
 FILE_EXTENSION = ["PDF"]
@@ -219,7 +213,6 @@ def question_paper_detail(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT question_papers FROM subjects WHERE id ="+id)
     sub_name = cur.fetchall()[0][0]
-    print((sub_name))
     cur.execute(
         "SELECT link FROM question_paper WHERE id =" + sub_name)
     detail = cur.fetchall()[0][0]
@@ -231,7 +224,6 @@ def subject_detail(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT question_papers FROM subjects WHERE id ="+id)
     sub_name = cur.fetchall()[0][0]
-    print((sub_name))
     cur.execute(
         "SELECT link, year FROM question_paper WHERE id =" + sub_name)
     detail = cur.fetchall()[0]
