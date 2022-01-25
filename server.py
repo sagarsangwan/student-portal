@@ -51,7 +51,7 @@ def getDriveService(credentials):
     return service
 
 
-@ app.route("/", methods=['GET'])
+@app.route("/", methods=['GET'])
 def home():
     cur = mysql.connection.cursor()
     cur.execute(
@@ -64,35 +64,42 @@ def home():
     return render_template("pages/home.html", value=list(table))
 
 
-@ app.route("/search")
+@app.route("/search")
 def search():
     search = request.args.get('search')
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
-                search + "%'OR subject_desc LIKE '%" + search + "%'OR subject_alt_name LIKE '%" + search + "%'")
-    result = cur.fetchall()
-    if len(result) > 0:
-        return render_template("pages/search.html", value=result, search=search)
-    else:
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT subject_name, subject_desc id FROM subjects ")
-        subject = cur.fetchall()
-        subject = list(subject)
-        match = []
-        for i in subject:
-            match.extend(list(i))
-        matches = get_close_matches(search, match)
-
-        if len(matches) > 0:
-            a = matches[0]
-            cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
-                        a + "%'OR subject_desc LIKE '%" + a + "%'OR subject_alt_name LIKE '%" + a + "%'")
-            sub = cur.fetchall()
+    try:
+        if not search:
+            raise Exception("please enter a valid subject name")
         else:
-            return render_template("pages/search.html", search=search)
+            cur = mysql.connection.cursor()
+            cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
+                        search + "%'OR subject_desc LIKE '%" + search + "%'OR subject_alt_name LIKE '%" + search + "%'")
+            result = cur.fetchall()
+            if len(result) > 0:
+                return render_template("pages/search.html", value=result, search=search)
+            else:
+                cur = mysql.connection.cursor()
+                cur.execute(
+                    "SELECT subject_name, subject_desc id FROM subjects ")
+                subject = cur.fetchall()
+                subject = list(subject)
+                match = []
+                for i in subject:
+                    match.extend(list(i))
+                matches = get_close_matches(search, match)
+
+                if len(matches) > 0:
+                    a = matches[0]
+                    cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
+                                a + "%'OR subject_desc LIKE '%" + a + "%'OR subject_alt_name LIKE '%" + a + "%'")
+                    sub = cur.fetchall()
+                else:
+                    return render_template("pages/search.html", search=search)
+    except Exception as error:
+        return render_template("pages/search.html", error=error)
 
 
-@ app.route("/course/<id>", methods=['GET', 'POST'])
+@app.route("/course/<id>", methods=['GET', 'POST'])
 def courses(id):
     if request.method == 'GET':
         cur = mysql.connection.cursor()
