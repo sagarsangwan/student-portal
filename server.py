@@ -141,42 +141,44 @@ def add_data():
         course_name = request.form.getlist("course_name")
         subject_name = request.form.get("subject_name1")
         data = request.files["data"]
-        file_name = data.filename
-        data.save(file_name)
-        ext = file_name.split(".")
-        file_metadata = {
-            'name': file_name,
-            'parents': ["1OinSd5vgKsTMEmUvAxejgLZC4EgqfJAk"],
-            'mimeType': 'application/pdf'
-        }
-        media = MediaFileUpload(file_name, resumable=True)
-        file = service.files().create(body=file_metadata,
-                                      media_body=media, fields='id,name').execute()
-        file_id = file.get("id")
-        request_body = {
-            'role': 'reader',
-            'type': 'anyone'
-        }
-        response_permission = service.permissions().create(
-            fileId=file_id,
-            body=request_body
-        ).execute()
-
-        response_sharelink = service.files().get(
-            fileId=file_id,
-            fields="webViewLink"
-        ).execute()
-        link = response_sharelink.get("webViewLink")
-        os.remove(file_name)
 
         try:
+            if not data:
+                raise Exception("Please select a pdf file")
             if not course_name:
                 raise Exception("Please select course name")
             elif not subject_name:
-                raise Exception("Pease select subjects ")
+                raise Exception("Please select subjects ")
             elif ext[-1].upper() not in FILE_EXTENSION:
                 raise Exception("File type must be a pdf")
             else:
+                file_name = data.filename
+                data.save(file_name)
+                ext = file_name.split(".")
+                file_metadata = {
+                    'name': file_name,
+                    'parents': ["1OinSd5vgKsTMEmUvAxejgLZC4EgqfJAk"],
+                    'mimeType': 'application/pdf'
+                }
+                media = MediaFileUpload(file_name, resumable=True)
+                file = service.files().create(body=file_metadata,
+                                              media_body=media, fields='id,name').execute()
+                file_id = file.get("id")
+                request_body = {
+                    'role': 'reader',
+                    'type': 'anyone'
+                }
+                response_permission = service.permissions().create(
+                    fileId=file_id,
+                    body=request_body
+                ).execute()
+
+                response_sharelink = service.files().get(
+                    fileId=file_id,
+                    fields="webViewLink"
+                ).execute()
+                link = response_sharelink.get("webViewLink")
+                os.remove(file_name)
                 for c_name in course_name:
                     cur.execute("INSERT INTO user_data(course_name, subject_name, user_data) values(%s, %s, %s)", (
                         c_name, subject_name, str(link)))
