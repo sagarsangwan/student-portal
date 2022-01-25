@@ -51,7 +51,7 @@ def getDriveService(credentials):
     return service
 
 
-@ app.route("/", methods=['GET'])
+@app.route("/", methods=['GET'])
 def home():
     cur = mysql.connection.cursor()
     cur.execute(
@@ -64,35 +64,42 @@ def home():
     return render_template("pages/home.html", value=list(table))
 
 
-@ app.route("/search")
+@app.route("/search")
 def search():
     search = request.args.get('search')
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
-                search + "%'OR subject_desc LIKE '%" + search + "%'OR subject_alt_name LIKE '%" + search + "%'")
-    result = cur.fetchall()
-    if len(result) > 0:
-        return render_template("pages/search.html", value=result, search=search)
-    else:
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT subject_name, subject_desc id FROM subjects ")
-        subject = cur.fetchall()
-        subject = list(subject)
-        match = []
-        for i in subject:
-            match.extend(list(i))
-        matches = get_close_matches(search, match)
-
-        if len(matches) > 0:
-            a = matches[0]
-            cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
-                        a + "%'OR subject_desc LIKE '%" + a + "%'OR subject_alt_name LIKE '%" + a + "%'")
-            sub = cur.fetchall()
+    try:
+        if not search:
+            raise Exception("please enter a valid subject name")
         else:
-            return render_template("pages/search.html", search=search)
+            cur = mysql.connection.cursor()
+            cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
+                        search + "%'OR subject_desc LIKE '%" + search + "%'OR subject_alt_name LIKE '%" + search + "%'")
+            result = cur.fetchall()
+            if len(result) > 0:
+                return render_template("pages/search.html", value=result, search=search)
+            else:
+                cur = mysql.connection.cursor()
+                cur.execute(
+                    "SELECT subject_name, subject_desc id FROM subjects ")
+                subject = cur.fetchall()
+                subject = list(subject)
+                match = []
+                for i in subject:
+                    match.extend(list(i))
+                matches = get_close_matches(search, match)
+
+                if len(matches) > 0:
+                    a = matches[0]
+                    cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
+                                a + "%'OR subject_desc LIKE '%" + a + "%'OR subject_alt_name LIKE '%" + a + "%'")
+                    sub = cur.fetchall()
+                else:
+                    return render_template("pages/search.html", search=search)
+    except Exception as error:
+        return render_template("pages/search.html", error=error)
 
 
-@ app.route("/course/<id>", methods=['GET', 'POST'])
+@app.route("/course/<id>", methods=['GET', 'POST'])
 def courses(id):
     if request.method == 'GET':
         cur = mysql.connection.cursor()
@@ -141,42 +148,44 @@ def add_data():
         course_name = request.form.getlist("course_name")
         subject_name = request.form.get("subject_name1")
         data = request.files["data"]
-        file_name = data.filename
-        data.save(file_name)
-        ext = file_name.split(".")
-        file_metadata = {
-            'name': file_name,
-            'parents': ["1OinSd5vgKsTMEmUvAxejgLZC4EgqfJAk"],
-            'mimeType': 'application/pdf'
-        }
-        media = MediaFileUpload(file_name, resumable=True)
-        file = service.files().create(body=file_metadata,
-                                      media_body=media, fields='id,name').execute()
-        file_id = file.get("id")
-        request_body = {
-            'role': 'reader',
-            'type': 'anyone'
-        }
-        response_permission = service.permissions().create(
-            fileId=file_id,
-            body=request_body
-        ).execute()
-
-        response_sharelink = service.files().get(
-            fileId=file_id,
-            fields="webViewLink"
-        ).execute()
-        link = response_sharelink.get("webViewLink")
-        os.remove(file_name)
 
         try:
+            if not data:
+                raise Exception("Please select a pdf file")
             if not course_name:
                 raise Exception("Please select course name")
             elif not subject_name:
-                raise Exception("Pease select subjects ")
+                raise Exception("Please select subjects ")
             elif ext[-1].upper() not in FILE_EXTENSION:
                 raise Exception("File type must be a pdf")
             else:
+                file_name = data.filename
+                data.save(file_name)
+                ext = file_name.split(".")
+                file_metadata = {
+                    'name': file_name,
+                    'parents': ["1OinSd5vgKsTMEmUvAxejgLZC4EgqfJAk"],
+                    'mimeType': 'application/pdf'
+                }
+                media = MediaFileUpload(file_name, resumable=True)
+                file = service.files().create(body=file_metadata,
+                                              media_body=media, fields='id,name').execute()
+                file_id = file.get("id")
+                request_body = {
+                    'role': 'reader',
+                    'type': 'anyone'
+                }
+                response_permission = service.permissions().create(
+                    fileId=file_id,
+                    body=request_body
+                ).execute()
+
+                response_sharelink = service.files().get(
+                    fileId=file_id,
+                    fields="webViewLink"
+                ).execute()
+                link = response_sharelink.get("webViewLink")
+                os.remove(file_name)
                 for c_name in course_name:
                     cur.execute("INSERT INTO user_data(course_name, subject_name, user_data) values(%s, %s, %s)", (
                         c_name, subject_name, str(link)))

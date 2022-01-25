@@ -2,7 +2,7 @@
 {% block content %}
 
 {% set sub_heading %}
-    <h5> {{value|length}} result(s) found for <b>"{{search}}"</b></h5>
+<h5> {{value|length}} result(s) found for <b>"{{search}}"</b></h5>
 {% endset %}
 
 {% with course_name_header="Student Portal", course_subject_header=sub_heading %}
@@ -22,7 +22,27 @@
             </div>
         </div>
         {% endfor %}
+        <div class="col-12">
+            {% if error %}
+            <div class="modal show" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="alert alert-danger">
+                            {{error}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var myModal = new bootstrap.Modal(document.getElementById('errorModal'))
+                    myModal.show()
+                }, false);
+            </script>
+            {% endif %}
+        </div>
     </div>
+
 </div>
 
 {% endblock %}
