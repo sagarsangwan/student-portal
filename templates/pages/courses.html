@@ -3,6 +3,7 @@
 {% with course_name_header=header[0], course_subject_header=header[1] %}
 {% include "/components/uni_search.html" %}
 {% endwith %}
+
 <div class="container height">
     <div class="row justify-content-center">
         {% for id, s_name, s_desc in s1 %}
@@ -11,7 +12,14 @@
                 <div class="card-body">
                     <h5 class="card-title">{{s_name}}</h5>
                     <p class="card-text"> {{s_desc}} </p>
-                    <a href="/subject/{{id}}" class="btn btn-primary">Explore</a>
+                    <!-- <a href="/subject/{{id}}" class="btn btn-primary">Explore</a> -->
+                    <a href="/subject/{{id}}" class="cta">
+                        <span>learn more</span>
+                        <svg width="13px" height="10px" viewBox="0 0 13 10">
+                            <path d="M1,5 L11,5"></path>
+                            <polyline points="8 1 12 5 8 9"></polyline>
+                        </svg>
+                    </a>
                 </div>
             </div>
         </div>
