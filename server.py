@@ -131,15 +131,20 @@ def subject(id):
         print(detail)
         cur.close()
         # the code below is used for getting year of paper like from 2012 to 2019 is (2012-2019)
-        start = list(detail.keys())[-1]
-        start = list(start.split(" "))
-        length = len(start)
-        start = (start[length-1])
-        last = list(detail.keys())[0]
-        last = list(last.split(" "))
-        length = len(last)
-        last = last[length-1]
-        year = "("+start+" - "+last+")"
+        if detail == {}:
+            year = ""
+        else:
+            print(list(detail.keys()))
+            start = list(detail.keys())[-1]
+            start = list(start.split(" "))
+            length = len(start)
+            start = (start[length-1])
+            last = list(detail.keys())[0]
+            last = list(last.split(" "))
+            length = len(last)
+            last = last[length-1]
+
+            year = "("+start+" - "+last+")"
 
         # print(year)
         return render_template("pages/subject.html", subject_head1=subject_head[0], id1=id, year=year)
@@ -243,7 +248,11 @@ def questionpaper(id):
     detail = json.loads(detail)
     print(detail)
     cur.close()
-    year = list(detail.keys())[-1] + "-"+list(detail.keys())[0]
+    if detail == {}:
+        year = "()"
+        error = "not found"
+    else:
+        year = list(detail.keys())[-1] + "-"+list(detail.keys())[0]
     print(year)
     return render_template("pages/question-paper.html", detail=detail, year=year)
 
