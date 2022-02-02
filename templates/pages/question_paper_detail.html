@@ -6,9 +6,23 @@
         font-size: 56px;
         color: red;
     }
+
+    .icon-stopwatch {
+        color: #000;
+        position: absolute;
+        right: 1em;
+        top: 1em;
+        font-size: 10px;
+        font-weight: 400;
+    }
 </style>
 
 <div class="container height">
+    <div class="row">
+        <div class="col-12">
+
+        </div>
+    </div>
     <div class="row justify-content-center">
         {% for key, value in detail.items() %}
         <div class="col-xs-12 col-md-6 col-lg-4  home-search-pading">
@@ -25,6 +39,9 @@
                             <polyline points="8 1 12 5 8 9"></polyline>
                         </svg>
                     </a>
+                    <label for="">
+                        <small class="icon-stopwatch" title="times download">External <br>download</small>
+                    </label>
                 </div>
             </div>
         </div>
