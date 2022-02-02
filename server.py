@@ -122,7 +122,27 @@ def subject(id):
         cur.execute(
             "SELECT subject_name, subject_desc, id FROM subjects WHERE id IN (" + id + ")")
         subject_head = cur.fetchall()
-        return render_template("pages/subject.html", subject_head1=subject_head[0], id1=id)
+        cur.execute(
+            "SELECT qp_link FROM qp_links WHERE id ="+id)
+        detail = cur.fetchall()[0][0]
+        detail = detail.replace("\'", "\"")
+
+        detail = json.loads(detail)
+        print(detail)
+        cur.close()
+        # the code below is used for getting year of paper like from 2012 to 2019 is (2012-2019)
+        start = list(detail.keys())[-1]
+        start = list(start.split(" "))
+        length = len(start)
+        start = (start[length-1])
+        last = list(detail.keys())[0]
+        last = list(last.split(" "))
+        length = len(last)
+        last = last[length-1]
+        year = "("+start+" - "+last+")"
+
+        # print(year)
+        return render_template("pages/subject.html", subject_head1=subject_head[0], id1=id, year=year)
 
 
 FILE_EXTENSION = ["PDF"]
@@ -208,15 +228,23 @@ def feedback():
     return render_template("pages/feedback.html")
 
 
-@ app.route("/question_paper_details/<id>")
+@ app.route("/question_paper_detail/<id>")
 def question_paper_detail(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT question_papers FROM subjects WHERE id ="+id)
     sub_name = cur.fetchall()[0][0]
+    print(sub_name)
     cur.execute(
-        "SELECT link FROM question_paper WHERE id =" + sub_name)
+        "SELECT qp_link FROM qp_links WHERE id ="+sub_name)
     detail = cur.fetchall()[0][0]
-    return redirect(detail)
+    detail = detail.replace("\'", "\"")
+
+    detail = json.loads(detail)
+    print(detail)
+    cur.close()
+    year = list(detail.keys())[-1] + "-"+list(detail.keys())[0]
+    print(year)
+    return render_template("pages/question_paper_detail.html", detail=detail, year=year)
 
 
 @ app.route("/subject_detail/<id>")
