@@ -2,11 +2,18 @@
 
 
 {% block content %}
+{% set heading %}
+<img src="/static/images/logo.svg" class="home-search-logo" alt="">
+{% endset %}
 
-{% with course_name_header="Lastnightpaper", course_subject_header="Making it easy for students to find resources" %}
+{% with course_name_header=heading, course_subject_header="Making it easy for students to find resources" %}
 {% include "/components/uni_search.html" %}
 {% endwith %}
-
+<style>
+    .home-search-logo {
+        height: 67px;
+    }
+</style>
 <div class="container height">
     <div class="row justify-content-center">
         {% for row in value %}
