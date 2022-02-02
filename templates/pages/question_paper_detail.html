@@ -2,9 +2,9 @@
 
 {% block content %}
 <style>
-    .card-text {
+    .card-text1 {
         font-size: 56px;
-        text-decoration: red;
+        color: red;
     }
 </style>
 
@@ -15,9 +15,16 @@
             <div class="card mb-3 text-center">
                 <div class="card-body">
                     <h5 class="card-title">{{ key }}</h5>
-                    <p class="card-text"> <i class="far fa-file-pdf"></i> </p>
+                    <p class="card-text1"> <i class="far fa-file-pdf"></i> </p>
                     <!-- <i class="far fa-file-pdf"></i> -->
-                    <a href="{{ value }}" target="_blank" class="btn btn-primary">Explore</a>
+                    <!-- <a href="{{ value }}" target="_blank" class="btn btn-primary">Download</a> -->
+                    <a href="{{ value }}" class="cta">
+                        <span>download</span>
+                        <svg width="13px" height="10px" viewBox="0 0 13 10">
+                            <path d="M1,5 L11,5"></path>
+                            <polyline points="8 1 12 5 8 9"></polyline>
+                        </svg>
+                    </a>
                 </div>
             </div>
         </div>
