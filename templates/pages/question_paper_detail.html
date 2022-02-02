@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .card-text {
+        font-size: 56px;
+        text-decoration: red;
+    }
+</style>
+
+<div class="container height">
+    <div class="row justify-content-center">
+        {% for key, value in detail.items() %}
+        <div class="col-xs-12 col-md-6 col-lg-4  home-search-pading">
+            <div class="card mb-3 text-center">
+                <div class="card-body">
+                    <h5 class="card-title">{{ key }}</h5>
+                    <p class="card-text"> <i class="far fa-file-pdf"></i> </p>
+                    <!-- <i class="far fa-file-pdf"></i> -->
+                    <a href="{{ value }}" target="_blank" class="btn btn-primary">Explore</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
+
+
+
+{% endblock %}
