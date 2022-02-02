@@ -122,7 +122,27 @@ def subject(id):
         cur.execute(
             "SELECT subject_name, subject_desc, id FROM subjects WHERE id IN (" + id + ")")
         subject_head = cur.fetchall()
-        return render_template("pages/subject.html", subject_head1=subject_head[0], id1=id)
+        cur.execute(
+            "SELECT qp_link FROM qp_links WHERE id ="+id)
+        detail = cur.fetchall()[0][0]
+        detail = detail.replace("\'", "\"")
+
+        detail = json.loads(detail)
+        print(detail)
+        cur.close()
+        # the code below is used for getting year of paper like from 2012 to 2019 is (2012-2019)
+        start = list(detail.keys())[-1]
+        start = list(start.split(" "))
+        length = len(start)
+        start = (start[length-1])
+        last = list(detail.keys())[0]
+        last = list(last.split(" "))
+        length = len(last)
+        last = last[length-1]
+        year = "("+start+" - "+last+")"
+
+        # print(year)
+        return render_template("pages/subject.html", subject_head1=subject_head[0], id1=id, year=year)
 
 
 FILE_EXTENSION = ["PDF"]
