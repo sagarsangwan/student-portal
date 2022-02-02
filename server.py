@@ -208,15 +208,23 @@ def feedback():
     return render_template("pages/feedback.html")
 
 
-@ app.route("/question_paper_details/<id>")
+@ app.route("/question_paper_detail/<id>")
 def question_paper_detail(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT question_papers FROM subjects WHERE id ="+id)
     sub_name = cur.fetchall()[0][0]
+    print(sub_name)
     cur.execute(
-        "SELECT link FROM question_paper WHERE id =" + sub_name)
+        "SELECT qp_link FROM qp_links WHERE id ="+sub_name)
     detail = cur.fetchall()[0][0]
-    return redirect(detail)
+    detail = detail.replace("\'", "\"")
+
+    detail = json.loads(detail)
+    print(detail)
+    cur.close()
+    year = list(detail.keys())[-1] + "-"+list(detail.keys())[0]
+    print(year)
+    return render_template("pages/question_paper_detail.html", detail=detail, year=year)
 
 
 @ app.route("/subject_detail/<id>")
