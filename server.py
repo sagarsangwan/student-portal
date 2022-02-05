@@ -22,10 +22,12 @@ app.config["MYSQL_DB"] = os.environ.get('MYSQL_DB')
 load_dotenv('.env')
 mysql = MySQL(app)
 
+# sanitize user input. i hope this helps from SQL injection attacks
+
 
 def clean(string):
     clean_string = ""
-    valid_character = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ,.!?()[]{}<>\\/'
+    valid_character = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL@MNOPQRSTUVWXYZ1234567890 ,.!?()[]{}<>\\/'
     for char in string:
         if char.isalnum() or char in valid_character:
             clean_string += char
@@ -58,6 +60,8 @@ def getDriveCredentials():
         keyfile_dict, scopes=scopes)
 
     return credentials
+
+# login to google drive and get drive service object which i will use later to upload and get urls
 
 
 def getDriveService(credentials):
