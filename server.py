@@ -329,6 +329,7 @@ def logout():
     response.set_cookie('session_id', "")
     global default_user_id
     default_user_id = ""
+
     return response
 
 
