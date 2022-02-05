@@ -19,8 +19,17 @@ app.config["MYSQL_PASSWORD"] = os.environ.get('MYSQL_PASSWORD')
 app.config["MYSQL_DB"] = os.environ.get('MYSQL_DB')
 
 load_dotenv('.env')
-
 mysql = MySQL(app)
+
+
+def clean(string):
+    clean_string = ""
+    valid_character = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ,.!?()[]{}<>\\/'
+    for char in string:
+        if char.isalnum() or char in valid_character:
+            clean_string += char
+    return clean_string
+
 
 seq = os.environ.get("RANDOM_SEQ_KEY")
 default_user_id = random.choice(seq)
@@ -66,6 +75,7 @@ def home():
 @app.route("/search")
 def search():
     search = request.args.get('search')
+    search = clean(search)
     try:
         if not search:
             raise Exception("please enter a valid subject name")
@@ -167,6 +177,8 @@ def add_data():
         course_name = request.form.getlist("course_name")
         subject_name = request.form.get("subject_name1")
         data = request.files["data"]
+        file_name = data.filename
+        ext = file_name.split(".")
 
         try:
             if not data:
@@ -178,9 +190,7 @@ def add_data():
             elif ext[-1].upper() not in FILE_EXTENSION:
                 raise Exception("File type must be a pdf")
             else:
-                file_name = data.filename
                 data.save(file_name)
-                ext = file_name.split(".")
                 file_metadata = {
                     'name': file_name,
                     'parents': ["1OinSd5vgKsTMEmUvAxejgLZC4EgqfJAk"],
@@ -222,8 +232,10 @@ def feedback():
     if request.method == "POST":
         details = request.form
         names = details["name"]
+        names = clean(names)
         emails = details["email"]
         messages = details["message"]
+        messages = clean(messages)
         cur = mysql.connection.cursor()
         cur.execute("INSERT INTO messages(user_name, email, messages) values(%s, %s, %s)",
                     (names, emails, messages))
