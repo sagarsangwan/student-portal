@@ -1,11 +1,12 @@
-import re
 from flask import Flask, render_template, request, make_response, send_file, redirect
-import json
 import os
-from flask_mysqldb import MySQL
+import secrets
+import json
+import requests
+import re
 import difflib
+from flask_mysqldb import MySQL
 from difflib import get_close_matches
-import random
 from dotenv import load_dotenv
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.discovery import build
@@ -31,8 +32,14 @@ def clean(string):
     return clean_string
 
 
-seq = os.environ.get("RANDOM_SEQ_KEY")
-default_user_id = random.choice(seq)
+default_user_id = ""
+
+
+def generate_session_id():
+    global default_user_id
+    default_user_id = secrets.token_hex(16)
+    return default_user_id
+
 
 credentials = None
 service = None
@@ -284,7 +291,11 @@ def subject_detail(id):
 def dashboard():
     if request.method == "GET":
         user_id = request.cookies.get('session_id')
-        if user_id == default_user_id:
+        print(user_id + "user_id")
+        print(type(user_id))
+        print(default_user_id)
+        print(type(default_user_id))
+        if user_id and default_user_id and user_id == default_user_id:
             cur = mysql.connection.cursor()
             cur.execute("SELECT id, user_name, email, messages FROM messages")
             result = cur.fetchall()
@@ -292,7 +303,6 @@ def dashboard():
                 "SELECT * FROM user_data")
             data = cur.fetchall()
             cur.close()
-            print(data)
             return render_template("pages/dashboard.html", value=result, data=data)
         else:
             return redirect("/login")
@@ -302,7 +312,7 @@ def dashboard():
 def login():
     if request.method == 'GET':
         user_id = request.cookies.get('session_id')
-        if user_id == default_user_id:
+        if user_id and default_user_id and user_id == default_user_id:
 
             return redirect("/dashboard")
         else:
@@ -313,7 +323,7 @@ def login():
 
         if user_name == os.environ.get('DASHBOARD_USER_NAME') and password == os.environ.get('DASHBOARD_PASSWORD'):
             response = make_response(redirect('/dashboard'))
-            response.set_cookie('session_id', default_user_id)
+            response.set_cookie('session_id', generate_session_id())
             return response
         else:
             return render_template("pages/login.html", info="wrong user_name or password")
@@ -323,6 +333,7 @@ def login():
 def logout():
     response = make_response(redirect('/dashboard'))
     response.set_cookie('session_id', "")
+    default_user_id = ""
     return response
 
 
