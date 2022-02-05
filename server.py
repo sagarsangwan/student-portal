@@ -1,11 +1,12 @@
-import re
 from flask import Flask, render_template, request, make_response, send_file, redirect
-import json
 import os
-from flask_mysqldb import MySQL
+import secrets
+import json
+import requests
+import re
 import difflib
+from flask_mysqldb import MySQL
 from difflib import get_close_matches
-import random
 from dotenv import load_dotenv
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.discovery import build
@@ -21,18 +22,26 @@ app.config["MYSQL_DB"] = os.environ.get('MYSQL_DB')
 load_dotenv('.env')
 mysql = MySQL(app)
 
+# sanitize user input. i hope this helps from SQL injection attacks
+
 
 def clean(string):
     clean_string = ""
-    valid_character = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ,.!?()[]{}<>\\/'
+    valid_character = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL@MNOPQRSTUVWXYZ1234567890 ,.!?()[]{}<>\\/'
     for char in string:
         if char.isalnum() or char in valid_character:
             clean_string += char
     return clean_string
 
 
-seq = os.environ.get("RANDOM_SEQ_KEY")
-default_user_id = random.choice(seq)
+default_user_id = ""
+
+
+def generate_session_id():
+    global default_user_id
+    default_user_id = secrets.token_hex(16)
+    return default_user_id
+
 
 credentials = None
 service = None
@@ -51,6 +60,8 @@ def getDriveCredentials():
         keyfile_dict, scopes=scopes)
 
     return credentials
+
+# login to google drive and get drive service object which i will use later to upload and get urls
 
 
 def getDriveService(credentials):
@@ -96,12 +107,12 @@ def search():
                 for i in subject:
                     match.extend(list(i))
                 matches = get_close_matches(search, match)
-
                 if len(matches) > 0:
                     a = matches[0]
                     cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
                                 a + "%'OR subject_desc LIKE '%" + a + "%'OR subject_alt_name LIKE '%" + a + "%'")
                     sub = cur.fetchall()
+                    return render_template("pages/search.html", value=sub, search=search)
                 else:
                     return render_template("pages/search.html", search=search)
     except Exception as error:
@@ -138,13 +149,11 @@ def subject(id):
         detail = detail.replace("\'", "\"")
 
         detail = json.loads(detail)
-        print(detail)
         cur.close()
         # the code below is used for getting year of paper like from 2012 to 2019 is (2012-2019)
         if detail == {}:
             year = ""
         else:
-            print(list(detail.keys()))
             start = list(detail.keys())[-1]
             start = list(start.split(" "))
             length = len(start)
@@ -156,7 +165,6 @@ def subject(id):
 
             year = "("+start+" - "+last+")"
 
-        # print(year)
         return render_template("pages/subject.html", subject_head1=subject_head[0], id1=id, year=year)
 
 
@@ -223,7 +231,6 @@ def add_data():
 
             return render_template("pages/add_data.html",  subject=subject, courses=courses, info="Thanku for adding")
         except Exception as error:
-            print(error)
             return render_template("pages/add_data.html",  subject=subject, courses=courses, error=error)
 
 
@@ -250,7 +257,6 @@ def questionpaper(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT question_papers FROM subjects WHERE id ="+id)
     sub_name = cur.fetchall()[0][0]
-    print(sub_name)
     cur.execute(
         "SELECT qp_link FROM qp_links WHERE id ="+sub_name)
     detail = cur.fetchall()[0][0]
@@ -258,14 +264,13 @@ def questionpaper(id):
     detail.replace("downloads", "downloader")
 
     detail = json.loads(detail)
-    print(detail)
     cur.close()
     if detail == {}:
         year = "()"
         error = "not found"
     else:
         year = list(detail.keys())[-1] + "-"+list(detail.keys())[0]
-    print(year)
+
     return render_template("pages/question-paper.html", detail=detail, year=year)
 
 
@@ -284,7 +289,7 @@ def subject_detail(id):
 def dashboard():
     if request.method == "GET":
         user_id = request.cookies.get('session_id')
-        if user_id == default_user_id:
+        if user_id and default_user_id and user_id == default_user_id:
             cur = mysql.connection.cursor()
             cur.execute("SELECT id, user_name, email, messages FROM messages")
             result = cur.fetchall()
@@ -292,7 +297,6 @@ def dashboard():
                 "SELECT * FROM user_data")
             data = cur.fetchall()
             cur.close()
-            print(data)
             return render_template("pages/dashboard.html", value=result, data=data)
         else:
             return redirect("/login")
@@ -302,7 +306,7 @@ def dashboard():
 def login():
     if request.method == 'GET':
         user_id = request.cookies.get('session_id')
-        if user_id == default_user_id:
+        if user_id and default_user_id and user_id == default_user_id:
 
             return redirect("/dashboard")
         else:
@@ -313,7 +317,7 @@ def login():
 
         if user_name == os.environ.get('DASHBOARD_USER_NAME') and password == os.environ.get('DASHBOARD_PASSWORD'):
             response = make_response(redirect('/dashboard'))
-            response.set_cookie('session_id', default_user_id)
+            response.set_cookie('session_id', generate_session_id())
             return response
         else:
             return render_template("pages/login.html", info="wrong user_name or password")
@@ -323,6 +327,8 @@ def login():
 def logout():
     response = make_response(redirect('/dashboard'))
     response.set_cookie('session_id', "")
+    global default_user_id
+    default_user_id = ""
     return response
 
 
