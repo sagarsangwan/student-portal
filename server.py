@@ -107,12 +107,12 @@ def search():
                 for i in subject:
                     match.extend(list(i))
                 matches = get_close_matches(search, match)
-
                 if len(matches) > 0:
                     a = matches[0]
                     cur.execute("SELECT subject_name, subject_desc, id FROM subjects WHERE subject_name LIKE '%" +
                                 a + "%'OR subject_desc LIKE '%" + a + "%'OR subject_alt_name LIKE '%" + a + "%'")
                     sub = cur.fetchall()
+                    return render_template("pages/search.html", value=sub, search=search)
                 else:
                     return render_template("pages/search.html", search=search)
     except Exception as error:
@@ -149,13 +149,11 @@ def subject(id):
         detail = detail.replace("\'", "\"")
 
         detail = json.loads(detail)
-        print(detail)
         cur.close()
         # the code below is used for getting year of paper like from 2012 to 2019 is (2012-2019)
         if detail == {}:
             year = ""
         else:
-            print(list(detail.keys()))
             start = list(detail.keys())[-1]
             start = list(start.split(" "))
             length = len(start)
@@ -167,7 +165,6 @@ def subject(id):
 
             year = "("+start+" - "+last+")"
 
-        # print(year)
         return render_template("pages/subject.html", subject_head1=subject_head[0], id1=id, year=year)
 
 
@@ -234,7 +231,6 @@ def add_data():
 
             return render_template("pages/add_data.html",  subject=subject, courses=courses, info="Thanku for adding")
         except Exception as error:
-            print(error)
             return render_template("pages/add_data.html",  subject=subject, courses=courses, error=error)
 
 
@@ -261,7 +257,6 @@ def questionpaper(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT question_papers FROM subjects WHERE id ="+id)
     sub_name = cur.fetchall()[0][0]
-    print(sub_name)
     cur.execute(
         "SELECT qp_link FROM qp_links WHERE id ="+sub_name)
     detail = cur.fetchall()[0][0]
@@ -269,14 +264,13 @@ def questionpaper(id):
     detail.replace("downloads", "downloader")
 
     detail = json.loads(detail)
-    print(detail)
     cur.close()
     if detail == {}:
         year = "()"
         error = "not found"
     else:
         year = list(detail.keys())[-1] + "-"+list(detail.keys())[0]
-    print(year)
+
     return render_template("pages/question-paper.html", detail=detail, year=year)
 
 
@@ -295,10 +289,6 @@ def subject_detail(id):
 def dashboard():
     if request.method == "GET":
         user_id = request.cookies.get('session_id')
-        print(user_id + "user_id")
-        print(type(user_id))
-        print(default_user_id)
-        print(type(default_user_id))
         if user_id and default_user_id and user_id == default_user_id:
             cur = mysql.connection.cursor()
             cur.execute("SELECT id, user_name, email, messages FROM messages")
@@ -337,6 +327,7 @@ def login():
 def logout():
     response = make_response(redirect('/dashboard'))
     response.set_cookie('session_id', "")
+    global default_user_id
     default_user_id = ""
     return response
 
